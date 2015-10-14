@@ -4,7 +4,7 @@ require "rbconfig"
 
 module Packer
   module Commands
-    class Version < BaseCommand
+    class Version < NullCommand
       def run(args=[], options={})
         ruby = File.join(RbConfig::CONFIG["bindir"], RbConfig::CONFIG["ruby_install_name"])
         exit(system(ruby, $0, "--version") ? 0 : 1)

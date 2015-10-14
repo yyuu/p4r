@@ -7,7 +7,7 @@ require "packer/templates"
 
 module Packer
   module Commands
-    class BaseCommand
+    class NullCommand
       def initialize(application, options={})
         @application = application
       end
