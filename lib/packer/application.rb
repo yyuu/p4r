@@ -8,18 +8,18 @@ require "packer/version"
 module Packer
   class Application
     def initialize()
+      @logger = Logger.new(STDERR).tap do |logger|
+        logger.level = Logger::INFO
+      end
       @optparse = OptionParser.new
       @optparse.version = Packer::VERSION
       @options = {
         debug: false,
-        logger: Logger.new(STDERR).tap { |logger|
-          logger.level = Logger::INFO
-        },
+        variables: {},
       }
       define_options
     end
-    attr_reader :options
-    attr_reader :optparse
+    attr_reader :logger
 
     def main(argv=[])
       args = @optparse.order(argv)
@@ -29,8 +29,8 @@ module Packer
           @optparse.banner = "Usage: packer #{command} [options]"
           cmd.define_options(@optparse, @options)
           args = cmd.parse_options(@optparse, args)
-          if options[:debug]
-            options[:logger].level = Logger::DEBUG
+          if @options[:debug]
+            @logger.level = Logger::DEBUG
           end
           cmd.run(args, @options)
         end
@@ -46,9 +46,16 @@ module Packer
     end
 
     private
-    def define_options
+    def define_options()
       @optparse.on("-d", "--[no-]debug", "Enable debug mode") do |v|
-        options[:debug] = v
+        @options[:debug] = v
+      end
+      @optparse.on("--var KEY_VALUE", "Variable for template") do |v|
+        key, val = v.split(/\s*=\s*/, 2)
+        @options[:variables][key.strip] = (val || "").strip
+      end
+      @optparse.on("--var-file PATH", "JSON file containing user variables") do |v|
+        @options[:variables] = @options[:variables].merge(MultiJson.load(File.read(v)))
       end
     end
 

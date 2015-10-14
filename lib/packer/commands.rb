@@ -8,14 +8,10 @@ require "packer/templates"
 module Packer
   module Commands
     class BaseCommand
-      def initialize(application)
+      def initialize(application, options={})
         @application = application
-        @logger = application.options[:logger]
-        @options = application.options
       end
       attr_reader :application
-      attr_reader :logger
-      attr_reader :options
 
       def run(args=[], options={})
         raise(NotImplementedError)
@@ -30,6 +26,10 @@ module Packer
       end
 
       private
+      def logger
+        @application.logger
+      end
+
       def load_template_file(template_file, options={})
         load_template_string(File.read(template_file), options)
       end
@@ -39,7 +39,37 @@ module Packer
       end
 
       def load_template(template, options={})
-        Packer::Template.new(template, options)
+        runtime_variables = options.fetch(:variables, {})
+        variables = Hash[template.fetch("variables", {}).merge(runtime_variables).map { |k, v|
+          [k, prepare_string("env", v, ENV)]
+        }]
+        builders = prepare(template.fetch("builders", []), variables)
+        provisioners = prepare(template.fetch("provisioners", []), variables)
+        Packer::Template.new(builders, provisioners, options)
+      end
+
+      def prepare(x, variables={})
+        case x
+        when Array
+          x.map { |e| prepare(e, variables) }
+        when Hash
+          Hash[x.map { |k, v| [prepare(k, variables), prepare(v, variables)] }]
+        when String
+          prepare_string("user", x, variables)
+        else
+          x
+        end
+      end
+
+      def prepare_string(prefix, s, variables={})
+        s.gsub(/{{\s*#{Regexp.escape(prefix)}\s+`([^}]*)`\s*}}/) {
+          name = $1.strip
+          if variables.key?(name)
+            variables[name].to_s
+          else
+            raise("#{prefix} not found: #{name.inspect}: #{variables.inspect}")
+          end
+        }
       end
     end
   end
