@@ -3,6 +3,11 @@
 module Packer
   module Provisioners
     class File < NullProvisioner
+      def apply(builder, options={})
+        source = @definition["source"]
+        destination = @definition["destination"]
+        builder.put(::File.read(source), destination, options)
+      end
     end
   end
 end

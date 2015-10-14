@@ -18,19 +18,27 @@ module Packer
       end
 
       def setup(options={})
-        logger.debug([:setup, self].inspect)
+        logger.debug([:setup, self.object_id].inspect)
       end
 
       def teardown(options={})
-        logger.debug([:teardown, self].inspect)
+        logger.debug([:teardown, self.object_id].inspect)
       end
 
       def build(options={})
-        logger.debug([:build, self].inspect)
+        logger.debug([:build, self.object_id].inspect)
       end
 
       def logger
         @template.logger
+      end
+
+      def put(bytes, path, options={})
+        logger.debug("put: #{path.inspect} (#{bytes.length} bytes)")
+      end
+
+      def run(cmdline, options={})
+        logger.debug("run: #{cmdline}")
       end
     end
   end

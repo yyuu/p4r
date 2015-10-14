@@ -15,17 +15,21 @@ module Packer
     def build(options={})
       parallelism = Parallel.processor_count
       begin
-        Parallel.map(@builders, in_threads: parallelism) do |builder|
+        Parallel.each(@builders, in_threads: parallelism) do |builder|
           builder.setup(options.dup)
         end
-        machines = Parallel.map(@builders, in_threads: parallelism) { |builder|
+        Parallel.each(@builders, in_threads: parallelism) do |builder|
           builder.build(options.dup)
-        }
-        Parallel.each(machines, in_threads: parallelism) do |machine|
+        end
+        Parallel.each(@builders, in_threads: parallelism) do |builder|
           @provisioners.each do |provisioner|
-            provisioner.apply(machine, options.dup)
+            provisioner.apply(builder, options.dup)
           end
         end
+        true
+      rescue => error
+        logger.error("#{$$}: #{error}")
+        false
       ensure
         Parallel.each(@builders, in_threads: parallelism) do |builder|
           builder.teardown(options.dup) rescue nil
