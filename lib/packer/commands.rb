@@ -25,11 +25,11 @@ module Packer
         optparse.parse(args)
       end
 
-      private
       def logger
         @application.logger
       end
 
+      private
       def load_template_file(template_file, options={})
         load_template_string(File.read(template_file), options)
       end
@@ -45,7 +45,7 @@ module Packer
         }]
         builders = prepare(template.fetch("builders", []), variables)
         provisioners = prepare(template.fetch("provisioners", []), variables)
-        Packer::Template.new(builders, provisioners, options)
+        Packer::Template.new(self, builders, provisioners, options)
       end
 
       def prepare(x, variables={})

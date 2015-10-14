@@ -2,18 +2,27 @@
 
 module Packer
   module Provisioners
-    def self.load(definition, options={})
+    def self.load(template, definition, options={})
       type = definition["type"]
       require "packer/provisioners/#{type}"
       klass_name = type.downcase.split("-").map { |s| s.capitalize }.join
       klass = Packer::Provisioners.const_get(klass_name)
-      klass.new(definition, options)
+      klass.new(template, definition, options)
     end
 
     class NullProvisioner
-      def initialize(definition, options={})
+      def initialize(template, definition, options={})
+        @template = template
         @definition = definition
         @options = options
+      end
+
+      def apply(builder, options={})
+        logger.debug([:apply, self].inspect)
+      end
+
+      def logger
+        @template.logger
       end
     end
   end
