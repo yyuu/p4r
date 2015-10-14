@@ -61,11 +61,16 @@ module Packer
       begin
         klass = Packer::Commands.const_get(klass_name)
       rescue NameError
-        require "packer/commands/#{name}"
+        begin
+          require "packer/commands/#{name}"
+        rescue LoadError
+          raise(OptionParser::ParseError.new("unknown command: #{name}"))
+        end
         begin
           klass = Packer::Commands.const_get(klass_name)
         rescue NameError
-          raise
+          require "packer/commands/help"
+          klass = Packer::Commands::Help
         end
       end
       klass.new(self)
