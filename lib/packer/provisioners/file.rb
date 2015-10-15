@@ -6,7 +6,7 @@ module Packer
       def apply(builder, options={})
         source = @definition["source"]
         destination = @definition["destination"]
-        builder.put(::File.read(source), destination, options)
+        builder.put(source, destination, options)
       end
     end
   end

@@ -20,6 +20,7 @@ module Packer
         @definition = definition
         @options = options
       end
+      attr_reader :build_id
 
       def setup(options={})
         # nop
@@ -37,7 +38,23 @@ module Packer
         @template.logger
       end
 
-      def put(bytes, path, options={})
+      def debug(s)
+        @template.logger.debug("#{build_id.slice(0, 8)} : #{s}")
+      end
+
+      def info(s)
+        @template.logger.info("#{build_id.slice(0, 8)} : #{s}")
+      end
+
+      def warn(s)
+        @template.logger.warn("#{build_id.slice(0, 8)} : #{s}")
+      end
+
+      def error(s)
+        @template.logger.error("#{build_id.slice(0, 8)} : #{s}")
+      end
+
+      def put(source, destination, options={})
         raise(NotImplementedError)
       end
 

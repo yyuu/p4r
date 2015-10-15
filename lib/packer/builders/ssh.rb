@@ -18,20 +18,20 @@ module Packer
         begin
           delete_ssh_keypair(@ssh_tmpdir)
         rescue => error
-          logger.warn(error)
+          warn(error)
         end
       end
 
       def hostname()
-        "127.0.0.1"
+        raise(NotImplementedError)
       end
 
-      def put(bytes, path, options={})
-        logger.debug(Shellwords.shelljoin(["scp", "-", "#{hostname}:#{path}"]))
+      def put(source, destination, options={})
+        debug(Shellwords.shelljoin(["scp", source, "#{hostname}:#{destination}"]))
       end
 
       def run(cmdline, options={})
-        logger.debug(Shellwords.shelljoin(["ssh", hostname, "--", cmdline]))
+        debug(Shellwords.shelljoin(["ssh", hostname, "--", cmdline]))
       end
 
       private
@@ -40,7 +40,7 @@ module Packer
         if system(cmdline)
           @ssh_private_key = File.join(tmpdir, "identity")
           @ssh_public_key = File.join(tmpdir, "identity.pub")
-          logger.debug("Generated temporary ssh keypair as #{@ssh_private_key.dump} and #{@ssh_public_key.dump}.")
+          debug("Generated temporary ssh keypair as #{@ssh_private_key.dump} and #{@ssh_public_key.dump}.")
         else
           raise("failed: #{cmdline}")
         end
@@ -48,7 +48,7 @@ module Packer
 
       def delete_ssh_keypair(tmpdir)
         FileUtils.rm_rf(tmpdir)
-        logger.debug("Removed temporary ssh keypair of #{@ssh_private_key.dump} and #{@ssh_public_key.dump}.")
+        debug("Removed temporary ssh keypair of #{@ssh_private_key.dump} and #{@ssh_public_key.dump}.")
       end
     end
   end

@@ -15,6 +15,7 @@ module Packer
       @optparse = OptionParser.new
       @optparse.version = Packer::VERSION
       @options = {
+        dry_run: false,
         debug: false,
         variables: {},
       }
@@ -50,6 +51,9 @@ module Packer
     def define_options()
       @optparse.on("-d", "--[no-]debug", "Enable debug mode") do |v|
         @options[:debug] = v
+      end
+      @optparse.on("--[no-]dry-run", "Enable dry run") do |v|
+        @options[:dry_run] = v
       end
       @optparse.on("--var KEY_VALUE", "Variable for template") do |v|
         key, val = v.split(/\s*=\s*/, 2)

@@ -20,14 +20,6 @@ module Packer
       def hostname()
         "cloudstack.example.com"
       end
-
-      def put(bytes, path, options={})
-        super
-      end
-
-      def run(cmdline, options={})
-        super
-      end
     end
   end
 end
