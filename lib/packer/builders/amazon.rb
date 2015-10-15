@@ -1,10 +1,10 @@
 #!/usr/bin/env ruby
 
-require "packer/builders/amazon"
+require "packer/builders/ssh"
 
 module Packer
   module Builders
-    class AmazonEbs < Amazon
+    class Amazon < Ssh
       def setup(options={})
         super
       end
@@ -18,7 +18,7 @@ module Packer
       end
 
       def hostname()
-        "amazon-ebs.example.com"
+        "amazon.example.com"
       end
 
       def put(bytes, path, options={})

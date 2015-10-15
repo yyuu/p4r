@@ -1,8 +1,10 @@
 #!/usr/bin/env ruby
 
+require "packer/builders/amazon"
+
 module Packer
   module Builders
-    class AmazonInstance < SshBuilder
+    class AmazonInstance < Amazon
       def setup(options={})
         super
       end

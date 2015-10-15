@@ -1,8 +1,10 @@
 #!/usr/bin/env ruby
 
+require "packer/builders/ssh"
+
 module Packer
   module Builders
-    class Cloudstack < SshBuilder
+    class Cloudstack < Ssh
       def setup(options={})
         super
       end
