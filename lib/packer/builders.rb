@@ -1,11 +1,13 @@
 #!/usr/bin/env ruby
 
+require "shellwords"
+
 module Packer
   module Builders
     def self.load(template, definition, options={})
       type = definition["type"]
       require "packer/builders/#{type}"
-      klass_name = type.downcase.split("-").map { |s| s.capitalize }.join
+      klass_name = type.downcase.scan(/\w+/).map { |s| s.capitalize }.join
       klass = Packer::Builders.const_get(klass_name)
       klass.new(template, definition, options)
     end
@@ -18,15 +20,15 @@ module Packer
       end
 
       def setup(options={})
-        logger.debug([:setup, self.object_id].inspect)
+        # nop
       end
 
       def teardown(options={})
-        logger.debug([:teardown, self.object_id].inspect)
+        # nop
       end
 
       def build(options={})
-        logger.debug([:build, self.object_id].inspect)
+        # nop
       end
 
       def logger
@@ -34,11 +36,25 @@ module Packer
       end
 
       def put(bytes, path, options={})
-        logger.debug("put: #{path.inspect} (#{bytes.length} bytes)")
+        raise(NotImplementedError)
       end
 
       def run(cmdline, options={})
-        logger.debug("run: #{cmdline}")
+        raise(NotImplementedError)
+      end
+    end
+
+    class SshBuilder < NullBuilder
+      def hostname()
+        "127.0.0.1"
+      end
+
+      def put(bytes, path, options={})
+        logger.debug(Shellwords.shelljoin(["scp", "-", "#{hostname}:#{path}"]))
+      end
+
+      def run(cmdline, options={})
+        logger.debug(Shellwords.shelljoin(["ssh", hostname, "--", cmdline]))
       end
     end
   end
