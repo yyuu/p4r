@@ -1,5 +1,6 @@
 #!/usr/bin/env ruby
 
+require "digest/sha2"
 require "shellwords"
 
 module Packer
@@ -14,6 +15,7 @@ module Packer
 
     class NullBuilder
       def initialize(template, definition, options={})
+        @build_id = Digest::SHA256.hexdigest([Time.new.to_i, $$, self.object_id, rand(1<<16)].join(":"))
         @template = template
         @definition = definition
         @options = options

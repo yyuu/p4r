@@ -10,17 +10,11 @@ module Packer
         super
         @ssh_tmpdir = Dir.mktmpdir
         create_ssh_keypair(@ssh_tmpdir)
-        authorize_ssh_public_key(@ssh_public_key)
       end
 
       def teardown(options={})
         super
       ensure
-        begin
-          revoke_ssh_public_key(@ssh_public_key)
-        rescue => error
-          logger.warn(error)
-        end
         begin
           delete_ssh_keypair(@ssh_tmpdir)
         rescue => error
@@ -46,7 +40,7 @@ module Packer
         if system(cmdline)
           @ssh_private_key = File.join(tmpdir, "identity")
           @ssh_public_key = File.join(tmpdir, "identity.pub")
-          logger.debug("generated temporary ssh keypair at #{tmpdir.dump}")
+          logger.debug("Generated temporary ssh keypair as #{@ssh_private_key.dump} and #{@ssh_public_key.dump}.")
         else
           raise("failed: #{cmdline}")
         end
@@ -54,15 +48,7 @@ module Packer
 
       def delete_ssh_keypair(tmpdir)
         FileUtils.rm_rf(tmpdir)
-        logger.debug("removed temporary ssh keypair at #{tmpdir.dump}")
-      end
-
-      def authorize_ssh_public_key(ssh_public_key)
-        logger.debug("authorize ssh public key at #{ssh_public_key.dump}")
-      end
-
-      def revoke_ssh_public_key(ssh_public_key)
-        logger.debug("revoke ssh public key at #{ssh_public_key.dump}")
+        logger.debug("Removed temporary ssh keypair of #{@ssh_private_key.dump} and #{@ssh_public_key.dump}.")
       end
     end
   end
