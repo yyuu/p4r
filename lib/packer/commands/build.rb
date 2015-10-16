@@ -8,14 +8,42 @@ module Packer
       def run(args=[], options={})
         templates = args.map { |template_file| load_template_file(template_file, options) }
         parallelism = Parallel.processor_count
-        status = Parallel.map(templates, in_processes: parallelism) { |template|
-          begin
-            template.build(options)
-          rescue => error
-            logger.error("#{$$}: #{error}")
-            false
+
+        begin
+          status = Parallel.map(templates, in_processes: parallelism) { |template|
+            begin
+              template.setup(options)
+              template.build(options)
+              true
+            rescue => error
+              if Array === error.backtrace
+                logger.error("#{$$} : " + ([error.to_s] + error.backtrace.map { |s| "\t" + s }).join("\n"))
+              else
+                logger.error("#{$$} : " + error.to_s)
+              end
+              false
+            end
+          }
+        rescue Interrupt
+          status = templates.map { false }
+        end
+
+        begin
+          Parallel.each(templates, in_processes: parallelism) do |template|
+            begin
+              template.teardown(options)
+            rescue => error
+              if Array === error.backtrace
+                logger.warn("#{$$} : " + ([error.to_s] + error.backtrace.map { |s| "\t" + s }).join("\n"))
+              else
+                logger.warn("#{$$} : " + error.to_s)
+              end
+            end
           end
-        }
+        rescue Interrupt
+          # nop
+        end
+
         if status.all?
           exit(0)
         else

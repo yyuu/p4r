@@ -12,28 +12,29 @@ module Packer
       @provisioners = provisioners.map { |provisioner| Packer::Provisioners.load(self, provisioner, options) }
     end
 
+    def setup(options={})
+      parallelism = Parallel.processor_count
+      Parallel.each(@builders, in_threads: parallelism) do |builder|
+        builder.setup(options.dup)
+      end
+    end
+
     def build(options={})
       parallelism = Parallel.processor_count
-      begin
-        Parallel.each(@builders, in_threads: parallelism) do |builder|
-          builder.setup(options.dup)
+      Parallel.each(@builders, in_threads: parallelism) do |builder|
+        builder.build(options.dup)
+      end
+      Parallel.each(@builders, in_threads: parallelism) do |builder|
+        @provisioners.each do |provisioner|
+          provisioner.apply(builder, options.dup)
         end
-        Parallel.each(@builders, in_threads: parallelism) do |builder|
-          builder.build(options.dup)
-        end
-        Parallel.each(@builders, in_threads: parallelism) do |builder|
-          @provisioners.each do |provisioner|
-            provisioner.apply(builder, options.dup)
-          end
-        end
-        true
-      rescue => error
-        logger.error("#{$$}: #{error}")
-        false
-      ensure
-        Parallel.each(@builders, in_threads: parallelism) do |builder|
-          builder.teardown(options.dup) rescue nil
-        end
+      end
+    end
+
+    def teardown(options={})
+      parallelism = Parallel.processor_count
+      Parallel.each(@builders, in_threads: parallelism) do |builder|
+        builder.teardown(options.dup)
       end
     end
 

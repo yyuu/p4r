@@ -36,15 +36,18 @@ module Packer
         if system(cmdline)
           @ssh_private_key = File.join(tmpdir, "identity")
           @ssh_public_key = File.join(tmpdir, "identity.pub")
-          debug("Generated temporary ssh keypair as #{@ssh_private_key.dump} and #{@ssh_public_key.dump}.")
+          debug("Generated temporary ssh keypair in #{tmpdir.dump}.")
         else
           raise("failed: #{cmdline}")
         end
       end
 
       def delete_ssh_keypair(tmpdir)
-        FileUtils.rm_rf(tmpdir)
-        debug("Removed temporary ssh keypair of #{@ssh_private_key.dump} and #{@ssh_public_key.dump}.")
+        debug("Deleting temporary ssh keypair....")
+        if tmpdir
+          FileUtils.rm_rf(tmpdir)
+          debug("Deleted temporary ssh keypair in #{tmpdir.dump}.")
+        end
       end
     end
   end
