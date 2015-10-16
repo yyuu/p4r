@@ -27,11 +27,11 @@ module Packer
       end
 
       def put(source, destination, options={})
-        debug(Shellwords.shelljoin(["scp", source, "#{hostname}:#{destination}"]))
+        debug(Shellwords.shelljoin(["scp", "-i", @ssh_private_key, source, "#{hostname}:#{destination}"]))
       end
 
       def run(cmdline, options={})
-        debug(Shellwords.shelljoin(["ssh", hostname, "--", cmdline]))
+        debug(Shellwords.shelljoin(["ssh", "-i", @ssh_private_key, hostname, "--", cmdline]))
       end
 
       private

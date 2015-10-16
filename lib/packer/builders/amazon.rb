@@ -35,6 +35,23 @@ module Packer
         do_with_retry { delete_machine(@amazon_machine, options) }
       end
 
+      def put(source, destination, options={})
+        debug(Shellwords.shelljoin(["scp", "-i", @ssh_private_key, source, "#{hostname}:#{destination}"]))
+        @machine.scp(source, destination)
+      end
+
+      def run(cmdline, options={})
+        debug(Shellwords.shelljoin(["ssh", "-i", @ssh_private_key, hostname, "--", cmdline]))
+        @machine.ssh(cmdline) do |stdout, stderr|
+          if 0 < stdout.length
+            debug(stdout.chomp)
+          end
+          if 0 < stderr.length
+            warn(stderr.chomp)
+          end
+        end
+      end
+
       private
       def create_machine(name, options={})
         create_options = {
