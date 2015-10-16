@@ -6,9 +6,13 @@ require "tmpdir"
 module Packer
   module Builders
     class Ssh < NullBuilder
-      def setup(options={})
+      def initialize(template, definition, options={})
         super
         @ssh_tmpdir = Dir.mktmpdir
+      end
+
+      def setup(options={})
+        super
         create_ssh_keypair(@ssh_tmpdir)
       end
 
