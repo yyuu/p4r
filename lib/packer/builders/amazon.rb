@@ -63,19 +63,19 @@ module Packer
         else
           debug("Creating temporary machine #{name.dump} as #{create_options.inspect}.")
           @machine = @fog_compute.servers.create(create_options)
-          if @definition.key?("ssh_username")
-            @machine.username = @definition["ssh_username"]
-          end
           debug("Waiting for temporary machine #{name.dump} to be available....")
           @machine.wait_for do
             ready?
           end
-          @machine.reload
+          @fog_compute.tags.create(key: "Name", value: name, resource_id: @machine.id, resource_type: "instance")
+          if @definition.key?("ssh_username")
+            @machine.username = @definition["ssh_username"]
+          end
+          @machine.private_key_path = @ssh_private_key
           debug("Waiting for temporary machine #{name.dump} to be available via ssh....")
           @machine.wait_for do
             sshable?
           end
-          @machine.tags.create(key: "Name", value: name)
           debug("Created temporary machine #{name.dump} as #{create_options.inspect}.")
         end
       end
