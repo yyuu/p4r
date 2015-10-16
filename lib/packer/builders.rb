@@ -15,7 +15,7 @@ module Packer
 
     class NullBuilder
       def initialize(template, definition, options={})
-        @build_id = Digest::SHA256.hexdigest([Time.new.to_i, $$, self.object_id, rand(1<<16)].join(":"))
+        @build_id = Digest::SHA256.hexdigest([Time.new.to_i, $$, self.object_id, rand(1<<16)].join(":")).slice(0, 8)
         @template = template
         @definition = definition
         @options = options
@@ -39,19 +39,19 @@ module Packer
       end
 
       def debug(s)
-        @template.logger.debug("#{build_id.slice(0, 8)} : #{s}")
+        @template.logger.debug("#{build_id} : #{s}")
       end
 
       def info(s)
-        @template.logger.info("#{build_id.slice(0, 8)} : #{s}")
+        @template.logger.info("#{build_id} : #{s}")
       end
 
       def warn(s)
-        @template.logger.warn("#{build_id.slice(0, 8)} : #{s}")
+        @template.logger.warn("#{build_id} : #{s}")
       end
 
       def error(s)
-        @template.logger.error("#{build_id.slice(0, 8)} : #{s}")
+        @template.logger.error("#{build_id} : #{s}")
       end
 
       def put(source, destination, options={})

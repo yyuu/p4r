@@ -15,9 +15,9 @@ module Packer
           aws_secret_access_key: @definition["secret_key"],
           region: @definition["region"],
         )
-        @amazon_machine = "packer-#{@build_id.slice(0, 16)}"
-        @amazon_key_pair = "packer-#{@build_id.slice(0, 16)}"
-        @amazon_security_group = "packer-#{@build_id.slice(0, 16)}"
+        @amazon_machine = "packer-#{@build_id}"
+        @amazon_key_pair = "packer-#{@build_id}"
+        @amazon_security_group = "packer-#{@build_id}"
         create_key_pair(@amazon_key_pair, @ssh_public_key, options)
         create_security_group(@amazon_security_group, options)
         create_machine(@amazon_machine, options)
