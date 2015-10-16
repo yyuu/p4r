@@ -61,6 +61,27 @@ module Packer
       def run(cmdline, options={})
         raise(NotImplementedError)
       end
+
+      private
+      def do_with_retry(n=16)
+        n.times do |i|
+          begin
+            yield
+            return true
+          rescue => error
+            if Array === error.backtrace
+              warn(([error.to_s] + error.backtrace.map { |s| "\t" + s }).join("\n"))
+            else
+              warn(error.to_s)
+            end
+            wait = 1 + i + (rand(1 << i) & 0xff)
+            debug("Sleeping #{wait} seconds before retrying....")
+            sleep(wait)
+          end
+        end
+        error("Retry failed after #{n} times.")
+        return false
+      end
     end
   end
 end

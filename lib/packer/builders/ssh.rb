@@ -15,11 +15,7 @@ module Packer
       def teardown(options={})
         super
       ensure
-        begin
-          delete_ssh_keypair(@ssh_tmpdir)
-        rescue => error
-          warn(error)
-        end
+        do_with_retry { delete_ssh_keypair(@ssh_tmpdir) }
       end
 
       def hostname()
