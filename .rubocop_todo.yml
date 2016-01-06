@@ -11,11 +11,6 @@ Lint/HandleExceptions:
   Exclude:
     - 'lib/packer/commands/build.rb'
 
-# Offense count: 1
-Lint/ShadowingOuterLocalVariable:
-  Exclude:
-    - 'lib/packer/builders/cloudstack.rb'
-
 # Offense count: 10
 Metrics/AbcSize:
   Max: 91

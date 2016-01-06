@@ -66,8 +66,8 @@ module Packer
         else
           if definition['source_template_name']
             template_name = definition['source_template_name'].downcase
-            templates = @fog_compute.images.all('templatefilter' => 'featured').select { |template|
-              template.zone_id == @cloudstack_zone_id && template_name == template.name.downcase
+            templates = @fog_compute.images.all('templatefilter' => 'featured').select { |t|
+              t.zone_id == @cloudstack_zone_id && template_name == t.name.downcase
             }
             @cloudstack_source_template_id = templates.first.id
           end
