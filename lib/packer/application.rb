@@ -31,9 +31,7 @@ module Packer
           @optparse.banner = "Usage: packer #{command} [options]"
           cmd.define_options(@optparse, @options)
           args = cmd.parse_options(@optparse, args)
-          if @options[:debug]
-            @logger.level = Logger::DEBUG
-          end
+          @logger.level = Logger::DEBUG if @options[:debug]
           cmd.run(args, @options)
         end
       rescue OptionParser::ParseError => error

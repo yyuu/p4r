@@ -69,15 +69,6 @@ Style/GuardClause:
     - 'lib/packer/builders/cloudstack.rb'
     - 'lib/packer/builders/ssh.rb'
 
-# Offense count: 5
-# Cop supports --auto-correct.
-# Configuration parameters: MaxLineLength.
-Style/IfUnlessModifier:
-  Exclude:
-    - 'lib/packer/application.rb'
-    - 'lib/packer/builders/amazon.rb'
-    - 'lib/packer/builders/cloudstack.rb'
-
 # Offense count: 2
 # Cop supports --auto-correct.
 # Configuration parameters: PreferredDelimiters.

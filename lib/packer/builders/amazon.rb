@@ -49,12 +49,8 @@ module Packer
       def run(cmdline, _options={})
         debug(Shellwords.shelljoin(['ssh', '-i', @ssh_private_key, hostname, '--', cmdline]))
         @machine.ssh(cmdline) do |stdout, stderr|
-          if 0 < stdout.length
-            debug(stdout.chomp)
-          end
-          if 0 < stderr.length
-            warn(stderr.chomp)
-          end
+          debug(stdout.chomp) if 0 < stdout.length
+          warn(stderr.chomp) if 0 < stderr.length
         end
       end
 
@@ -114,9 +110,7 @@ module Packer
           if options[:dry_run]
             # nop
           else
-            if @machine
-              @machine.destroy
-            end
+            @machine.destroy if @machine
           end
           debug("Deleted temporary machine #{name.inspect}.")
         end

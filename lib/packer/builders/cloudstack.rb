@@ -186,9 +186,7 @@ module Packer
           if options[:dry_run]
             # nop
           else
-            if @machine
-              @machine.destroy
-            end
+            @machine.destroy if @machine
           end
           debug("Deleted temporary machine #{name.inspect}.")
         end
