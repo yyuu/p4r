@@ -4,7 +4,7 @@ require 'parallel'
 
 module Packer
   module Commands
-    class Build < NullCommand
+    class Build < NullCommand # :nodoc:
       def run(args=[], options={})
         templates = args.map { |template_file| load_template_file(template_file, options) }
         parallelism = Parallel.processor_count

@@ -4,7 +4,7 @@ require 'packer/builders/amazon'
 
 module Packer
   module Builders
-    class AmazonInstance < Amazon
+    class AmazonInstance < Amazon # :nodoc:
       def hostname
         if options[:dry_run]
           'amazon-instance'

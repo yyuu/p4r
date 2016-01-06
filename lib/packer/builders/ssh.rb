@@ -5,7 +5,7 @@ require 'tmpdir'
 
 module Packer
   module Builders
-    class Ssh < NullBuilder
+    class Ssh < NullBuilder # :nodoc:
       def initialize(template, definition, options={})
         super
         @ssh_tmpdir = Dir.mktmpdir

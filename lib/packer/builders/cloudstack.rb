@@ -6,7 +6,7 @@ require 'packer/builders/ssh'
 
 module Packer
   module Builders
-    class Cloudstack < Ssh
+    class Cloudstack < Ssh # :nodoc:
       def initialize(template, definition, options={})
         super
         api_url = URI.parse(definition['api_url'] || ENV['CLOUDSTACK_API_URL'])

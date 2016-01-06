@@ -6,7 +6,7 @@ require 'packer/commands'
 require 'packer/version'
 
 module Packer
-  class Application
+  class Application # :nodoc:
     def initialize
       @logger = Logger.new(STDERR).tap do |logger|
         logger.level = Logger::DEBUG

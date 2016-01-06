@@ -4,7 +4,7 @@ require 'digest/sha2'
 require 'shellwords'
 
 module Packer
-  module Builders
+  module Builders # :nodoc:
     def self.load(template, definition, options={})
       type = definition['type']
       require "packer/builders/#{type}"
@@ -13,7 +13,7 @@ module Packer
       klass.new(template, definition, options)
     end
 
-    class NullBuilder
+    class NullBuilder # :nodoc:
       def initialize(template, definition, options={})
         @build_id = Digest::SHA256.hexdigest([Time.new.to_i, Process.pid, object_id, rand(1 << 16)].join(':')).slice(0, 8)
         @template = template

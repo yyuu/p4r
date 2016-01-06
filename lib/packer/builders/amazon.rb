@@ -6,7 +6,7 @@ require 'packer/builders/ssh'
 
 module Packer
   module Builders
-    class Amazon < Ssh
+    class Amazon < Ssh # :nodoc:
       def initialize(template, definition, options={})
         super
         @fog_compute = Fog::Compute.new(

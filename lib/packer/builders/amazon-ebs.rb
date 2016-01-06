@@ -4,7 +4,7 @@ require 'packer/builders/amazon'
 
 module Packer
   module Builders
-    class AmazonEbs < Amazon
+    class AmazonEbs < Amazon # :nodoc:
       def hostname
         if options[:dry_run]
           'amazon-ebs'

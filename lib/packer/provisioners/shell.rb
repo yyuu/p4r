@@ -2,7 +2,7 @@
 
 module Packer
   module Provisioners
-    class Shell < NullProvisioner
+    class Shell < NullProvisioner # :nodoc:
       def apply(builder, options={})
         inline = @definition['inline'].join("\n")
         builder.run(inline, options)

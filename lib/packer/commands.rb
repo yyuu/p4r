@@ -7,7 +7,7 @@ require 'packer/templates'
 
 module Packer
   module Commands
-    class NullCommand
+    class NullCommand # :nodoc:
       def initialize(application, _options={})
         @application = application
       end

@@ -1,7 +1,7 @@
 #!/usr/bin/env ruby
 
 module Packer
-  module Provisioners
+  module Provisioners # :nodoc:
     def self.load(template, definition, options={})
       type = definition['type']
       require "packer/provisioners/#{type}"
@@ -10,7 +10,7 @@ module Packer
       klass.new(template, definition, options)
     end
 
-    class NullProvisioner
+    class NullProvisioner # :nodoc:
       def initialize(template, definition, options={})
         @template = template
         @definition = definition

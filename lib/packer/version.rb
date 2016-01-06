@@ -1,3 +1,3 @@
-module Packer
+module Packer # :nodoc:
   VERSION = '0.0.1'
 end

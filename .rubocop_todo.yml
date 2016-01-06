@@ -37,11 +37,6 @@ Metrics/MethodLength:
 Metrics/PerceivedComplexity:
   Max: 21
 
-# Offense count: 18
-# Configuration parameters: Exclude.
-Style/Documentation:
-  Enabled: false
-
 # Offense count: 2
 # Configuration parameters: Exclude.
 Style/FileName:

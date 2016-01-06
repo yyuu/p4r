@@ -2,7 +2,7 @@
 
 module Packer
   module Provisioners
-    class File < NullProvisioner
+    class File < NullProvisioner # :nodoc:
       def apply(builder, options={})
         source = @definition['source']
         destination = @definition['destination']

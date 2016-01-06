@@ -5,7 +5,7 @@ require 'packer/builders'
 require 'packer/provisioners'
 
 module Packer
-  class Template
+  class Template # :nodoc:
     def initialize(command, builders, provisioners, options={})
       @command = command
       @builders = builders.map { |builder| Packer::Builders.load(self, builder, options) }
