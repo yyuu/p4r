@@ -30,9 +30,9 @@ module Packer
         else
           if definition['zone_name']
             zone_name = definition['zone_name'].downcase
-            zones = @fog_compute.zones.all.select { |zone|
+            zones = @fog_compute.zones.all.select do |zone|
               zone_name == zone.name.downcase
-            }
+            end
             @cloudstack_zone_id = zones.first.id
           end
         end
@@ -42,9 +42,9 @@ module Packer
         else
           if definition['service_offering_name']
             service_offering_name = definition['service_offering_name'].downcase
-            service_offerings = @fog_compute.flavors.all.select { |service_offering|
+            service_offerings = @fog_compute.flavors.all.select do |service_offering|
               service_offering_name == service_offering.name.downcase
-            }
+            end
             @cloudstack_service_offering_id = service_offerings.first.id
           end
         end
@@ -54,9 +54,9 @@ module Packer
         else
           if definition['disk_offering_name']
             disk_offering_name = definition['disk_offering_name'].downcase
-            disk_offerings = @fog_compute.disk_offerings.all.select { |disk_offering|
+            disk_offerings = @fog_compute.disk_offerings.all.select do |disk_offering|
               disk_offering_name == disk_offering.name.downcase
-            }
+            end
             @cloudstack_disk_offering_id = disk_offerings.first.id
           end
         end
@@ -66,9 +66,9 @@ module Packer
         else
           if definition['source_template_name']
             template_name = definition['source_template_name'].downcase
-            templates = @fog_compute.images.all('templatefilter' => 'featured').select { |t|
+            templates = @fog_compute.images.all('templatefilter' => 'featured').select do |t|
               t.zone_id == @cloudstack_zone_id && template_name == t.name.downcase
-            }
+            end
             @cloudstack_source_template_id = templates.first.id
           end
         end
@@ -78,9 +78,9 @@ module Packer
         else
           if definition['network_names']
             network_names = definition['network_names'].map { |network_name| network_name.downcase }
-            networks = @fog_compute.networks.all.select { |network|
+            networks = @fog_compute.networks.all.select do |network|
               network.zone_id == @cloudstack_zone_id && network_names.include?(network.name.downcase)
-            }
+            end
             @cloudstack_network_ids = networks.map { |network| network.id }
           end
         end

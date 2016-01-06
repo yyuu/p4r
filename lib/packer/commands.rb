@@ -41,9 +41,9 @@ module Packer
 
       def load_template(template, options={})
         runtime_variables = options.fetch(:variables, {})
-        variables = Hash[template.fetch('variables', {}).merge(runtime_variables).map { |k, v|
+        variables = Hash[template.fetch('variables', {}).merge(runtime_variables).map do |k, v|
           [k, prepare_string('env', v, ENV)]
-        }]
+        end]
         builders = prepare(template.fetch('builders', []), variables)
         provisioners = prepare(template.fetch('provisioners', []), variables)
         Packer::Template.new(self, builders, provisioners, options)

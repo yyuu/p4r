@@ -10,7 +10,7 @@ module Packer
         parallelism = Parallel.processor_count
 
         begin
-          status = Parallel.map(templates, in_threads: parallelism) { |template|
+          status = Parallel.map(templates, in_threads: parallelism) do |template|
             begin
               template.setup(options)
               template.build(options)
@@ -23,7 +23,7 @@ module Packer
               end
               false
             end
-          }
+          end
         rescue Interrupt
           status = templates.map { false }
         end

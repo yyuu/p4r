@@ -67,7 +67,7 @@ module Packer
           key_name: @amazon_key_pair,
         }
         if @definition.key?('launch_block_device_mappings')
-          create_options[:block_device_mapping] = @definition['launch_block_device_mappings'].map { |mapping|
+          create_options[:block_device_mapping] = @definition['launch_block_device_mappings'].map do |mapping|
             data = {'DeviceName' => mapping['device_name']}
             if mapping.key?('delete_on_termination')
               data['Ebs.DeleteOnTermination'] = mapping['delete_on_termination']
@@ -79,7 +79,7 @@ module Packer
               data['VirtualName'] = mapping['virtual_name']
             end
             data
-          }
+          end
         end
         if options[:dry_run]
           info("Creating temporary machine #{name.inspect} as #{create_options.inspect}.")
