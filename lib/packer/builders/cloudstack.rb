@@ -255,12 +255,15 @@ module Packer
         else
           if definition['source_template_name']
             name = definition['source_template_name'].downcase
-            @fog_compute.images.all('templatefilter' => 'featured').find do |t|
+            templates = @fog_compute.images.all('templatefilter' => 'featured').select do |t|
               if definition['zone_id']
-                name == t.name.downcase && t.zone_id == definition['zone_id']
+                t.zone_id == definition['zone_id']
               else
-                name == t.name.downcase
+                true
               end
+            end
+            templates.find do |t|
+              name == t.name.downcase
             end.id
           else
             default_value
@@ -274,12 +277,15 @@ module Packer
         else
           if definition['network_names']
             names = Array(names).map(&:downcase)
-            @fog_compute.networks.all.select do |network|
+            networks = @fog_compute.networks.all.select do |network|
               if definition['zone_id']
-                names.include?(network.name.downcase) && network.zone_id == definition['zone_id']
+                network.zone_id == definition['zone_id']
               else
-                names.include?(network.name.downcase)
+                true
               end
+            end
+            networks.find do |network|
+              names.include?(network.name.downcase)
             end.map(&:id)
           else
             default_value
