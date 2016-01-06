@@ -59,12 +59,3 @@ Style/RaiseArgs:
 # Configuration parameters: SupportedStyles.
 Style/SpaceAroundEqualsInParameterDefault:
   EnforcedStyle: no_space
-
-# Offense count: 7
-# Cop supports --auto-correct.
-Style/SpecialGlobalVars:
-  Exclude:
-    - 'lib/packer/builders.rb'
-    - 'lib/packer/commands/build.rb'
-    - 'lib/packer/commands/help.rb'
-    - 'lib/packer/commands/version.rb'

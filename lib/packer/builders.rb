@@ -15,7 +15,7 @@ module Packer
 
     class NullBuilder
       def initialize(template, definition, options={})
-        @build_id = Digest::SHA256.hexdigest([Time.new.to_i, $$, object_id, rand(1 << 16)].join(':')).slice(0, 8)
+        @build_id = Digest::SHA256.hexdigest([Time.new.to_i, Process.pid, object_id, rand(1 << 16)].join(':')).slice(0, 8)
         @template = template
         @definition = definition
         @options = options

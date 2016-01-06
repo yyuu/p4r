@@ -17,9 +17,9 @@ module Packer
               true
             rescue => error
               if error.backtrace.is_a?(Array)
-                logger.error("#{$$} : " + ([error.to_s] + error.backtrace.map { |s| "\t" + s }).join("\n"))
+                logger.error("#{Process.pid} : " + ([error.to_s] + error.backtrace.map { |s| "\t" + s }).join("\n"))
               else
-                logger.error("#{$$} : " + error.to_s)
+                logger.error("#{Process.pid} : " + error.to_s)
               end
               false
             end
@@ -34,9 +34,9 @@ module Packer
               template.teardown(options)
             rescue => error
               if error.backtrace.is_a?(Array)
-                logger.warn("#{$$} : " + ([error.to_s] + error.backtrace.map { |s| "\t" + s }).join("\n"))
+                logger.warn("#{Process.pid} : " + ([error.to_s] + error.backtrace.map { |s| "\t" + s }).join("\n"))
               else
-                logger.warn("#{$$} : " + error.to_s)
+                logger.warn("#{Process.pid} : " + error.to_s)
               end
             end
           end

@@ -7,7 +7,7 @@ module Packer
     class Version < NullCommand
       def run(_args=[], _options={})
         ruby = File.join(RbConfig::CONFIG['bindir'], RbConfig::CONFIG['ruby_install_name'])
-        exit(system(ruby, $0, '--version') ? 0 : 1)
+        exit(system(ruby, $PROGRAM_NAME, '--version') ? 0 : 1)
       end
     end
   end
