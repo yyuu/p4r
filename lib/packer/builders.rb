@@ -54,11 +54,11 @@ module Packer
         @template.logger.error("#{build_id} : #{s}")
       end
 
-      def put(source, destination, options={})
+      def put(_source, _destination, _options={})
         fail(NotImplementedError)
       end
 
-      def run(cmdline, options={})
+      def run(_cmdline, _options={})
         fail(NotImplementedError)
       end
 

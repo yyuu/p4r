@@ -8,16 +8,16 @@ require 'packer/templates'
 module Packer
   module Commands
     class NullCommand
-      def initialize(application, options={})
+      def initialize(application, _options={})
         @application = application
       end
       attr_reader :application
 
-      def run(args=[], options={})
+      def run(_args=[], _options={})
         fail(NotImplementedError)
       end
 
-      def define_options(optparse, options={})
+      def define_options(_optparse, _options={})
         # nop
       end
 

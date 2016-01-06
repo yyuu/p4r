@@ -17,7 +17,7 @@ module Packer
         @options = options
       end
 
-      def apply(builder, options={})
+      def apply(_builder, _options={})
         logger.debug([:apply, self.object_id].inspect)
       end
 

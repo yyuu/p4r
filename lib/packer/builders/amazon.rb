@@ -41,12 +41,12 @@ module Packer
         end
       end
 
-      def put(source, destination, options={})
+      def put(source, destination, _options={})
         debug(Shellwords.shelljoin(['scp', '-i', @ssh_private_key, source, "#{hostname}:#{destination}"]))
         @machine.scp(source, destination)
       end
 
-      def run(cmdline, options={})
+      def run(cmdline, _options={})
         debug(Shellwords.shelljoin(['ssh', '-i', @ssh_private_key, hostname, '--', cmdline]))
         @machine.ssh(cmdline) do |stdout, stderr|
           if 0 < stdout.length

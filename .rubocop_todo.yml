@@ -16,19 +16,6 @@ Lint/ShadowingOuterLocalVariable:
   Exclude:
     - 'lib/packer/builders/cloudstack.rb'
 
-# Offense count: 18
-# Cop supports --auto-correct.
-# Configuration parameters: AllowUnusedKeywordArguments, IgnoreEmptyMethods.
-Lint/UnusedMethodArgument:
-  Exclude:
-    - 'lib/packer/builders.rb'
-    - 'lib/packer/builders/amazon.rb'
-    - 'lib/packer/builders/ssh.rb'
-    - 'lib/packer/commands.rb'
-    - 'lib/packer/commands/help.rb'
-    - 'lib/packer/commands/version.rb'
-    - 'lib/packer/provisioners.rb'
-
 # Offense count: 10
 Metrics/AbcSize:
   Max: 91

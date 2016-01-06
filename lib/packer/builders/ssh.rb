@@ -26,11 +26,11 @@ module Packer
         raise(NotImplementedError)
       end
 
-      def put(source, destination, options={})
+      def put(source, destination, _options={})
         debug(Shellwords.shelljoin(['scp', '-i', @ssh_private_key, source, "#{hostname}:#{destination}"]))
       end
 
-      def run(cmdline, options={})
+      def run(cmdline, _options={})
         debug(Shellwords.shelljoin(['ssh', '-i', @ssh_private_key, hostname, '--', cmdline]))
       end
 
