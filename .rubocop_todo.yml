@@ -171,9 +171,3 @@ Style/TrailingComma:
     - 'lib/packer/application.rb'
     - 'lib/packer/builders/amazon.rb'
     - 'lib/packer/builders/cloudstack.rb'
-
-# Offense count: 2
-# Cop supports --auto-correct.
-Style/UnneededPercentQ:
-  Exclude:
-    - 'p4r.gemspec'

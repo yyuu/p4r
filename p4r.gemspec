@@ -8,8 +8,8 @@ Gem::Specification.new do |spec|
   spec.version       = Packer::VERSION
   spec.authors       = ['Yamashita Yuu']
   spec.email         = ['peek824545201@gmail.com']
-  spec.summary       = %q{Yet another command-line tool to build machine image on cloud platforms}
-  spec.description   = %q{Yet another command-line tool to build machine image on cloud platforms}
+  spec.summary       = 'Yet another command-line tool to build machine image on cloud platforms'
+  spec.description   = 'Yet another command-line tool to build machine image on cloud platforms'
   spec.homepage      = 'https://github.com/yyuu/p4r'
   spec.license       = 'MIT'
 
