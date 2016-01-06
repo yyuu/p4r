@@ -37,12 +37,6 @@ Metrics/MethodLength:
 Metrics/PerceivedComplexity:
   Max: 21
 
-# Offense count: 1
-# Cop supports --auto-correct.
-Style/CommentIndentation:
-  Exclude:
-    - 'lib/packer/application.rb'
-
 # Offense count: 18
 # Configuration parameters: Exclude.
 Style/Documentation:

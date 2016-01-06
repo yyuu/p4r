@@ -9,7 +9,6 @@ module Packer
   class Application
     def initialize
       @logger = Logger.new(STDERR).tap do |logger|
-#       logger.level = Logger::INFO
         logger.level = Logger::DEBUG
       end
       @optparse = OptionParser.new
