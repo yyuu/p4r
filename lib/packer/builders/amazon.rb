@@ -47,7 +47,7 @@ module Packer
       end
 
       def run(cmdline, options={})
-        debug(Shellwords.shelljoin(['ssh', '-i', @ssh_private_key, hostname, "--", cmdline]))
+        debug(Shellwords.shelljoin(['ssh', '-i', @ssh_private_key, hostname, '--', cmdline]))
         @machine.ssh(cmdline) do |stdout, stderr|
           if 0 < stdout.length
             debug(stdout.chomp)
@@ -91,6 +91,10 @@ module Packer
             ready?
           end
           @fog_compute.tags.create(key: 'Name', value: name, resource_id: @machine.id, resource_type: 'instance')
+          @machine.ssh_options = {
+            paranoid: false,
+            user_known_hosts_file: '/dev/null',
+          }
           if @definition.key?('ssh_username')
             @machine.username = @definition['ssh_username']
           end

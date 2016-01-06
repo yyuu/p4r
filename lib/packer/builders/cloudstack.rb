@@ -138,7 +138,7 @@ module Packer
           create_options[:disk_offering_id] = @cloudstack_disk_offering_id
         end
         if @cloudstack_network_ids
-          create_options[:network_ids] = Array(@cloudstack_network_ids).join(",")
+          create_options[:network_ids] = Array(@cloudstack_network_ids).join(',')
         end
         if options[:dry_run]
           info("Creating temporary machine #{name.inspect} as #{create_options.inspect}.")
@@ -162,6 +162,10 @@ module Packer
             persisted?
           end
           @machine.ssh_ip_address = @cloudstack_ip_address
+          @machine.ssh_options = {
+            paranoid: false,
+            user_known_hosts_file: '/dev/null',
+          }
           if @definition.key?('ssh_username')
             @machine.username = @definition['ssh_username']
           end
