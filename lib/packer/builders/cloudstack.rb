@@ -194,7 +194,9 @@ module Packer
 
       def create_key_pair(name, public_key, options={})
         key_pairs = @fog_compute.list_ssh_key_pairs['listsshkeypairsresponse']['sshkeypair']
-        unless key_pairs.any? { |key_pair| key_pair['name'] == name }
+        if key_pairs.any? { |key_pair| key_pair['name'] == name }
+          raise("key pair already exists: #{name.inspect}")
+        else
           if options[:dry_run]
             info("Creating temporary key pair #{name.inspect} from #{public_key.inspect}.")
           else
@@ -204,8 +206,6 @@ module Packer
             end
           end
           debug("Created temporary key pair #{name.inspect} from #{public_key.inspect}.")
-        else
-          raise("key pair already exists: #{name.inspect}")
         end
       end
 
