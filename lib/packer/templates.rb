@@ -1,8 +1,8 @@
 #!/usr/bin/env ruby
 
-require "parallel"
-require "packer/builders"
-require "packer/provisioners"
+require 'parallel'
+require 'packer/builders'
+require 'packer/provisioners'
 
 module Packer
   class Template

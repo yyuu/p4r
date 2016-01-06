@@ -1,12 +1,12 @@
 #!/usr/bin/env ruby
 
-require "digest/sha2"
-require "shellwords"
+require 'digest/sha2'
+require 'shellwords'
 
 module Packer
   module Builders
     def self.load(template, definition, options={})
-      type = definition["type"]
+      type = definition['type']
       require "packer/builders/#{type}"
       klass_name = type.downcase.scan(/\w+/).map { |s| s.capitalize }.join
       klass = Packer::Builders.const_get(klass_name)
@@ -15,7 +15,7 @@ module Packer
 
     class NullBuilder
       def initialize(template, definition, options={})
-        @build_id = Digest::SHA256.hexdigest([Time.new.to_i, $$, self.object_id, rand(1<<16)].join(":")).slice(0, 8)
+        @build_id = Digest::SHA256.hexdigest([Time.new.to_i, $$, self.object_id, rand(1<<16)].join(':')).slice(0, 8)
         @template = template
         @definition = definition
         @options = options
@@ -55,14 +55,15 @@ module Packer
       end
 
       def put(source, destination, options={})
-        raise(NotImplementedError)
+        fail(NotImplementedError)
       end
 
       def run(cmdline, options={})
-        raise(NotImplementedError)
+        fail(NotImplementedError)
       end
 
       private
+
       def do_with_retry(n=16)
         n.times do |i|
           begin

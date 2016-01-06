@@ -1,9 +1,9 @@
 #!/usr/bin/env ruby
 
-require "fileutils"
-require "multi_json"
-require "oj"
-require "packer/templates"
+require 'fileutils'
+require 'multi_json'
+require 'oj'
+require 'packer/templates'
 
 module Packer
   module Commands
@@ -14,7 +14,7 @@ module Packer
       attr_reader :application
 
       def run(args=[], options={})
-        raise(NotImplementedError)
+        fail(NotImplementedError)
       end
 
       def define_options(optparse, options={})
@@ -30,6 +30,7 @@ module Packer
       end
 
       private
+
       def load_template_file(template_file, options={})
         load_template_string(File.read(template_file), options)
       end
@@ -40,11 +41,11 @@ module Packer
 
       def load_template(template, options={})
         runtime_variables = options.fetch(:variables, {})
-        variables = Hash[template.fetch("variables", {}).merge(runtime_variables).map { |k, v|
-          [k, prepare_string("env", v, ENV)]
+        variables = Hash[template.fetch('variables', {}).merge(runtime_variables).map { |k, v|
+          [k, prepare_string('env', v, ENV)]
         }]
-        builders = prepare(template.fetch("builders", []), variables)
-        provisioners = prepare(template.fetch("provisioners", []), variables)
+        builders = prepare(template.fetch('builders', []), variables)
+        provisioners = prepare(template.fetch('provisioners', []), variables)
         Packer::Template.new(self, builders, provisioners, options)
       end
 
@@ -55,21 +56,21 @@ module Packer
         when Hash
           Hash[x.map { |k, v| [prepare(k, variables), prepare(v, variables)] }]
         when String
-          prepare_string("user", x, variables)
+          prepare_string('user', x, variables)
         else
           x
         end
       end
 
       def prepare_string(prefix, s, variables={})
-        s.gsub(/{{\s*#{Regexp.escape(prefix)}\s+`([^}]*)`\s*}}/) {
+        s.gsub(/{{\s*#{Regexp.escape(prefix)}\s+`([^}]*)`\s*}}/) do
           name = $1.strip
           if variables.key?(name)
             variables[name].to_s
           else
-            raise("#{prefix} not found: #{name.inspect}: #{variables.inspect}")
+            fail("#{prefix} not found: #{name.inspect}: #{variables.inspect}")
           end
-        }
+        end
       end
     end
   end
