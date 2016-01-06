@@ -18,7 +18,7 @@ module Packer
       end
 
       def apply(_builder, _options={})
-        logger.debug([:apply, self.object_id].inspect)
+        logger.debug([:apply, object_id].inspect)
       end
 
       def logger

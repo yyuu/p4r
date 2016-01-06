@@ -94,13 +94,6 @@ Style/RedundantReturn:
   Exclude:
     - 'lib/packer/builders.rb'
 
-# Offense count: 2
-# Cop supports --auto-correct.
-Style/RedundantSelf:
-  Exclude:
-    - 'lib/packer/builders.rb'
-    - 'lib/packer/provisioners.rb'
-
 # Offense count: 60
 # Cop supports --auto-correct.
 # Configuration parameters: SupportedStyles.
