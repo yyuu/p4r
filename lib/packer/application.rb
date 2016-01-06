@@ -26,7 +26,7 @@ module Packer
     def main(argv=[])
       args = @optparse.order(argv)
       begin
-        command = ( args.shift || 'help' )
+        command = (args.shift || 'help')
         get_command(command).tap do |cmd|
           @optparse.banner = "Usage: packer #{command} [options]"
           cmd.define_options(@optparse, @options)

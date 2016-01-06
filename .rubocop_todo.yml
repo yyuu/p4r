@@ -131,12 +131,6 @@ Style/SpaceAroundOperators:
 Style/SpaceInsideHashLiteralBraces:
   Enabled: false
 
-# Offense count: 2
-# Cop supports --auto-correct.
-Style/SpaceInsideParens:
-  Exclude:
-    - 'lib/packer/application.rb'
-
 # Offense count: 7
 # Cop supports --auto-correct.
 Style/SpecialGlobalVars:
