@@ -17,7 +17,7 @@ module Packer
       @options = {
         dry_run: false,
         debug: false,
-        variables: {},
+        variables: {}
       }
       define_options
     end

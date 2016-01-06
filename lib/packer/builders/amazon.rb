@@ -13,7 +13,7 @@ module Packer
           provider: 'AWS',
           aws_access_key_id: definition['access_key'],
           aws_secret_access_key: definition['secret_key'],
-          region: definition['region'],
+          region: definition['region']
         )
         @amazon_machine = "packer-#{build_id}"
         @amazon_key_pair = "packer-#{build_id}"
@@ -61,7 +61,7 @@ module Packer
           flavor_id: @definition['instance_type'],
           groups: [@amazon_security_groups],
           image_id: @definition['source_ami'],
-          key_name: @amazon_key_pair,
+          key_name: @amazon_key_pair
         }
         if @definition.key?('launch_block_device_mappings')
           create_options[:block_device_mapping] = @definition['launch_block_device_mappings'].map do |mapping|
@@ -90,7 +90,7 @@ module Packer
           @fog_compute.tags.create(key: 'Name', value: name, resource_id: @machine.id, resource_type: 'instance')
           @machine.ssh_options = {
             paranoid: false,
-            user_known_hosts_file: '/dev/null',
+            user_known_hosts_file: '/dev/null'
           }
           if @definition.key?('ssh_username')
             @machine.username = @definition['ssh_username']

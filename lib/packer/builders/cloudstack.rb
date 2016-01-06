@@ -19,7 +19,7 @@ module Packer
           cloudstack_scheme: api_url.scheme,
           cloudstack_host: api_url.host,
           cloudstack_port: api_url.port,
-          cloudstack_path: api_url.path,
+          cloudstack_path: api_url.path
         )
         @cloudstack_machine = "packer-#{build_id}"
         @cloudstack_key_pair = "packer-#{build_id}"
@@ -133,7 +133,7 @@ module Packer
           zone_id: @cloudstack_zone_id,
           display_name: name,
           key_name: @cloudstack_key_pair,
-          name: name,
+          name: name
         }
         if @cloudstack_disk_offering_id
           create_options[:disk_offering_id] = @cloudstack_disk_offering_id
@@ -165,7 +165,7 @@ module Packer
           @machine.ssh_ip_address = @cloudstack_ip_address
           @machine.ssh_options = {
             paranoid: false,
-            user_known_hosts_file: '/dev/null',
+            user_known_hosts_file: '/dev/null'
           }
           if @definition.key?('ssh_username')
             @machine.username = @definition['ssh_username']

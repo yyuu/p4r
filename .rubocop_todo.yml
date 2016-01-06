@@ -162,12 +162,3 @@ Style/SymbolProc:
 Style/TrailingBlankLines:
   Exclude:
     - 'Rakefile'
-
-# Offense count: 7
-# Cop supports --auto-correct.
-# Configuration parameters: EnforcedStyleForMultiline, SupportedStyles.
-Style/TrailingComma:
-  Exclude:
-    - 'lib/packer/application.rb'
-    - 'lib/packer/builders/amazon.rb'
-    - 'lib/packer/builders/cloudstack.rb'
