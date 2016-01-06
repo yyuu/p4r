@@ -65,7 +65,7 @@ module Packer
         }
         if @definition.key?('launch_block_device_mappings')
           create_options[:block_device_mapping] = @definition['launch_block_device_mappings'].map do |mapping|
-            data = {'DeviceName' => mapping['device_name']}
+            data = { 'DeviceName' => mapping['device_name'] }
             if mapping.key?('delete_on_termination')
               data['Ebs.DeleteOnTermination'] = mapping['delete_on_termination']
             end

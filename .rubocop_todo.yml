@@ -118,12 +118,6 @@ Style/SignalException:
 Style/SpaceAroundEqualsInParameterDefault:
   EnforcedStyle: no_space
 
-# Offense count: 2
-# Cop supports --auto-correct.
-# Configuration parameters: EnforcedStyle, EnforcedStyleForEmptyBraces, SupportedStyles.
-Style/SpaceInsideHashLiteralBraces:
-  Enabled: false
-
 # Offense count: 7
 # Cop supports --auto-correct.
 Style/SpecialGlobalVars:
