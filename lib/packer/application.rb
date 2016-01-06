@@ -64,7 +64,7 @@ module Packer
     end
 
     def const_name(name)
-      name.to_s.split(/[^\w]+/).map { |s| s.capitalize }.join
+      name.to_s.split(/[^\w]+/).map(&:capitalize).join
     end
 
     def get_command(name)

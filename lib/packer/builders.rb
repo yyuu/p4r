@@ -8,7 +8,7 @@ module Packer
     def self.load(template, definition, options={})
       type = definition['type']
       require "packer/builders/#{type}"
-      klass_name = type.downcase.scan(/\w+/).map { |s| s.capitalize }.join
+      klass_name = type.downcase.scan(/\w+/).map(&:capitalize).join
       klass = Packer::Builders.const_get(klass_name)
       klass.new(template, definition, options)
     end

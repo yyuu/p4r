@@ -77,11 +77,11 @@ module Packer
           @cloudstack_network_ids = definition['network_ids']
         else
           if definition['network_names']
-            network_names = definition['network_names'].map { |network_name| network_name.downcase }
+            network_names = definition['network_names'].map(&:downcase)
             networks = @fog_compute.networks.all.select do |network|
               network.zone_id == @cloudstack_zone_id && network_names.include?(network.name.downcase)
             end
-            @cloudstack_network_ids = networks.map { |network| network.id }
+            @cloudstack_network_ids = networks.map(&:id)
           end
         end
       end
