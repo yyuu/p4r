@@ -8,20 +8,20 @@ require 'packer/templates'
 module Packer
   module Commands
     class NullCommand # :nodoc:
-      def initialize(application, _options={})
+      def initialize(application, _options = {})
         @application = application
       end
       attr_reader :application
 
-      def run(_args=[], _options={})
+      def run(_args = [], _options = {})
         fail(NotImplementedError)
       end
 
-      def define_options(_optparse, _options={})
+      def define_options(_optparse, _options = {})
         # nop
       end
 
-      def parse_options(optparse, args=[])
+      def parse_options(optparse, args = [])
         optparse.parse(args)
       end
 
@@ -31,15 +31,15 @@ module Packer
 
       private
 
-      def load_template_file(template_file, options={})
+      def load_template_file(template_file, options = {})
         load_template_string(File.read(template_file), options)
       end
 
-      def load_template_string(template_string, options={})
+      def load_template_string(template_string, options = {})
         load_template(MultiJson.load(template_string), options)
       end
 
-      def load_template(template, options={})
+      def load_template(template, options = {})
         runtime_variables = options.fetch(:variables, {})
         variables = Hash[template.fetch('variables', {}).merge(runtime_variables).map do |k, v|
           [k, prepare_string('env', v, ENV)]
@@ -49,7 +49,7 @@ module Packer
         Packer::Template.new(self, builders, provisioners, options)
       end
 
-      def prepare(x, variables={})
+      def prepare(x, variables = {})
         case x
         when Array
           x.map { |e| prepare(e, variables) }
@@ -62,7 +62,7 @@ module Packer
         end
       end
 
-      def prepare_string(prefix, s, variables={})
+      def prepare_string(prefix, s, variables = {})
         s.gsub(/{{\s*#{Regexp.escape(prefix)}\s+`([^}]*)`\s*}}/) do
           name = Regexp.last_match[1].strip
           if variables.key?(name)

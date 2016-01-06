@@ -5,7 +5,7 @@ require 'shellwords'
 
 module Packer
   module Builders # :nodoc:
-    def self.load(template, definition, options={})
+    def self.load(template, definition, options = {})
       type = definition['type']
       require "packer/builders/#{type.tr('-', '_')}"
       klass_name = type.downcase.scan(/\w+/).map(&:capitalize).join
@@ -14,7 +14,7 @@ module Packer
     end
 
     class NullBuilder # :nodoc:
-      def initialize(template, definition, options={})
+      def initialize(template, definition, options = {})
         @build_id = Digest::SHA256.hexdigest([Time.new.to_i, Process.pid, object_id, rand(1 << 16)].join(':')).slice(0, 8)
         @template = template
         @definition = definition
@@ -22,15 +22,15 @@ module Packer
       end
       attr_reader :build_id
 
-      def setup(options={})
+      def setup(options = {})
         # nop
       end
 
-      def teardown(options={})
+      def teardown(options = {})
         # nop
       end
 
-      def build(options={})
+      def build(options = {})
         # nop
       end
 
@@ -54,17 +54,17 @@ module Packer
         @template.logger.error("#{build_id} : #{s}")
       end
 
-      def put(_source, _destination, _options={})
+      def put(_source, _destination, _options = {})
         fail(NotImplementedError)
       end
 
-      def run(_cmdline, _options={})
+      def run(_cmdline, _options = {})
         fail(NotImplementedError)
       end
 
       private
 
-      def do_with_retry(n=16)
+      def do_with_retry(n = 16)
         n.times do |i|
           begin
             yield

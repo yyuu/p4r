@@ -7,7 +7,7 @@ require 'packer/builders/ssh'
 module Packer
   module Builders
     class Cloudstack < Ssh # :nodoc:
-      def initialize(template, definition, options={})
+      def initialize(template, definition, options = {})
         super
         api_url = URI.parse(definition['api_url'] || ENV['CLOUDSTACK_API_URL'])
         api_key = definition['api_key'] || ENV['CLOUDSTACK_API_KEY']
@@ -86,14 +86,14 @@ module Packer
         end
       end
 
-      def setup(options={})
+      def setup(options = {})
         super
         create_key_pair(@cloudstack_key_pair, @ssh_public_key, options)
         create_security_group(@cloudstack_security_group, options)
         create_machine(@cloudstack_machine, options)
       end
 
-      def teardown(options={})
+      def teardown(options = {})
         super
       ensure
         do_with_retry do
@@ -107,7 +107,7 @@ module Packer
         end
       end
 
-      def build(options={})
+      def build(options = {})
         super
         sleep(60)
       end
@@ -126,7 +126,7 @@ module Packer
 
       private
 
-      def create_machine(name, options={})
+      def create_machine(name, options = {})
         create_options = {
           flavor_id: @cloudstack_service_offering_id,
           image_id: @cloudstack_source_template_id,
@@ -180,7 +180,7 @@ module Packer
         end
       end
 
-      def delete_machine(name, options={})
+      def delete_machine(name, options = {})
         debug('Deleting temporary machine....')
         return unless name
         if options[:dry_run]
@@ -191,7 +191,7 @@ module Packer
         debug("Deleted temporary machine #{name.inspect}.")
       end
 
-      def create_key_pair(name, public_key, options={})
+      def create_key_pair(name, public_key, options = {})
         key_pairs = @fog_compute.list_ssh_key_pairs['listsshkeypairsresponse']['sshkeypair']
         if key_pairs.any? { |key_pair| key_pair['name'] == name }
           fail("key pair already exists: #{name.inspect}")
@@ -208,7 +208,7 @@ module Packer
         end
       end
 
-      def delete_key_pair(name, public_key, options={})
+      def delete_key_pair(name, public_key, options = {})
         debug('Deleting temporary key pair....')
         return unless name && public_key
         if options[:dry_run]
@@ -225,7 +225,7 @@ module Packer
         debug("Deleted temporary key pair #{name.inspect}.")
       end
 
-      def create_security_group(name, options={})
+      def create_security_group(name, options = {})
         debug('Creating temporary public IP address....')
         return if options[:dry_run]
         @cloudstack_ip_address_id = @fog_compute.associate_ip_address(fordisplay: name, zoneid: @cloudstack_zone_id)['associateipaddressresponse']['id']
@@ -254,7 +254,7 @@ module Packer
         debug("Created temporary public IP address #{@cloudstack_ip_address_id.inspect}.")
       end
 
-      def delete_security_group(name, options={})
+      def delete_security_group(name, options = {})
         debug('Deleting temporary public IP address....')
         return unless name
         return if options[:dry_run]

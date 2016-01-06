@@ -7,7 +7,7 @@ require 'packer/builders/ssh'
 module Packer
   module Builders
     class Amazon < Ssh # :nodoc:
-      def initialize(template, definition, options={})
+      def initialize(template, definition, options = {})
         super
         @fog_compute = Fog::Compute.new(
           provider: 'AWS',
@@ -20,14 +20,14 @@ module Packer
         @amazon_security_group = "packer-#{build_id}"
       end
 
-      def setup(options={})
+      def setup(options = {})
         super
         create_key_pair(@amazon_key_pair, @ssh_public_key, options)
         create_security_group(@amazon_security_group, options)
         create_machine(@amazon_machine, options)
       end
 
-      def teardown(options={})
+      def teardown(options = {})
         super
       ensure
         do_with_retry do
@@ -41,12 +41,12 @@ module Packer
         end
       end
 
-      def put(source, destination, _options={})
+      def put(source, destination, _options = {})
         debug(Shellwords.shelljoin(['scp', '-i', @ssh_private_key, source, "#{hostname}:#{destination}"]))
         @machine.scp(source, destination)
       end
 
-      def run(cmdline, _options={})
+      def run(cmdline, _options = {})
         debug(Shellwords.shelljoin(['ssh', '-i', @ssh_private_key, hostname, '--', cmdline]))
         @machine.ssh(cmdline) do |stdout, stderr|
           debug(stdout.chomp) if 0 < stdout.length
@@ -56,7 +56,7 @@ module Packer
 
       private
 
-      def create_machine(name, options={})
+      def create_machine(name, options = {})
         create_options = {
           flavor_id: @definition['instance_type'],
           groups: [@amazon_security_groups],
@@ -104,7 +104,7 @@ module Packer
         end
       end
 
-      def delete_machine(name, options={})
+      def delete_machine(name, options = {})
         debug('Deleting temporary machine....')
         return unless name
         if options[:dry_run]
@@ -115,7 +115,7 @@ module Packer
         debug("Deleted temporary machine #{name.inspect}.")
       end
 
-      def create_key_pair(name, public_key, options={})
+      def create_key_pair(name, public_key, options = {})
         if @fog_compute.key_pairs.get(name).nil?
           if options[:dry_run]
             info("Creating temporary key pair #{name.inspect} from #{public_key.inspect}.")
@@ -130,7 +130,7 @@ module Packer
         end
       end
 
-      def delete_key_pair(name, public_key, options={})
+      def delete_key_pair(name, public_key, options = {})
         debug('Deleting temporary key pair....')
         return unless name
         return unless public_key
@@ -144,7 +144,7 @@ module Packer
         debug("Deleted temporary key pair #{name.inspect}.")
       end
 
-      def create_security_group(name, options={})
+      def create_security_group(name, options = {})
         if @fog_compute.security_groups.get(name).nil?
           if options[:dry_run]
             info("Creating temporary security group #{name.inspect}.")
@@ -158,7 +158,7 @@ module Packer
         end
       end
 
-      def delete_security_group(name, options={})
+      def delete_security_group(name, options = {})
         debug('Deleting temporary security group....')
         return unless name
         if options[:dry_run]

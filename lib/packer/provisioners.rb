@@ -2,7 +2,7 @@
 
 module Packer
   module Provisioners # :nodoc:
-    def self.load(template, definition, options={})
+    def self.load(template, definition, options = {})
       type = definition['type']
       require "packer/provisioners/#{type.tr('-', '_')}"
       klass_name = type.downcase.scan(/\w+/).map(&:capitalize).join
@@ -11,13 +11,13 @@ module Packer
     end
 
     class NullProvisioner # :nodoc:
-      def initialize(template, definition, options={})
+      def initialize(template, definition, options = {})
         @template = template
         @definition = definition
         @options = options
       end
 
-      def apply(_builder, _options={})
+      def apply(_builder, _options = {})
         logger.debug([:apply, object_id].inspect)
       end
 

@@ -22,7 +22,7 @@ module Packer
     end
     attr_reader :logger
 
-    def main(argv=[])
+    def main(argv = [])
       args = @optparse.order(argv)
       begin
         command = (args.shift || 'help')

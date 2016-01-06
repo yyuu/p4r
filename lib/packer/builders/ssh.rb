@@ -6,17 +6,17 @@ require 'tmpdir'
 module Packer
   module Builders
     class Ssh < NullBuilder # :nodoc:
-      def initialize(template, definition, options={})
+      def initialize(template, definition, options = {})
         super
         @ssh_tmpdir = Dir.mktmpdir
       end
 
-      def setup(options={})
+      def setup(options = {})
         super
         create_ssh_keypair(@ssh_tmpdir)
       end
 
-      def teardown(options={})
+      def teardown(options = {})
         super
       ensure
         do_with_retry { delete_ssh_keypair(@ssh_tmpdir) }
@@ -26,11 +26,11 @@ module Packer
         fail(NotImplementedError)
       end
 
-      def put(source, destination, _options={})
+      def put(source, destination, _options = {})
         debug(Shellwords.shelljoin(['scp', '-i', @ssh_private_key, source, "#{hostname}:#{destination}"]))
       end
 
-      def run(cmdline, _options={})
+      def run(cmdline, _options = {})
         debug(Shellwords.shelljoin(['ssh', '-i', @ssh_private_key, hostname, '--', cmdline]))
       end
 

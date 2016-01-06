@@ -41,9 +41,3 @@ Metrics/PerceivedComplexity:
 # Configuration parameters: SupportedStyles.
 Style/RaiseArgs:
   EnforcedStyle: compact
-
-# Offense count: 60
-# Cop supports --auto-correct.
-# Configuration parameters: SupportedStyles.
-Style/SpaceAroundEqualsInParameterDefault:
-  EnforcedStyle: no_space
