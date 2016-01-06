@@ -81,7 +81,7 @@ module Packer
           end
         end
         error("Retry failed after #{n} times.")
-        return false
+        false
       end
     end
   end

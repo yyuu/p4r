@@ -87,13 +87,6 @@ Style/PerlBackrefs:
 Style/RaiseArgs:
   EnforcedStyle: compact
 
-# Offense count: 1
-# Cop supports --auto-correct.
-# Configuration parameters: AllowMultipleReturnValues.
-Style/RedundantReturn:
-  Exclude:
-    - 'lib/packer/builders.rb'
-
 # Offense count: 60
 # Cop supports --auto-correct.
 # Configuration parameters: SupportedStyles.
