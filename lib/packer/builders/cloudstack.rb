@@ -25,11 +25,11 @@ module Packer
         @cloudstack_key_pair = "packer-#{build_id}"
         @cloudstack_security_group = "packer-#{build_id}"
 
-        @cloudstack_zone_id = resolve_zone(definition)
-        @cloudstack_service_offering_id = resolve_service_offering_id(definition)
-        @cloudstack_disk_offering_id = resolve_disk_offering(definition)
-        @cloudstack_source_template_id = resolve_source_template(definition.merge('zone_id' => @cloudstack_zone_id))
-        @cloudstack_network_ids = resolve_network_names(definition.merge('zone_id' => @cloudstack_zone_id))
+        @cloudstack_zone_id = find_zone(definition)
+        @cloudstack_service_offering_id = find_service_offering_id(definition)
+        @cloudstack_disk_offering_id = find_disk_offering(definition)
+        @cloudstack_source_template_id = find_source_template(definition.merge('zone_id' => @cloudstack_zone_id))
+        @cloudstack_network_ids = find_networks(definition.merge('zone_id' => @cloudstack_zone_id))
       end
 
       def setup(options = {})
@@ -204,92 +204,116 @@ module Packer
         debug("Deleted temporary public IP address #{name.inspect}.")
       end
 
-      def resolve_zone(definition, default_value = nil)
+      def find_zone(definition, default_value = nil)
         if definition['zone_id']
           definition['zone_id']
         else
-          if definition['zone_name']
-            name = definition['zone_name'].downcase
-            @fog_compute.zones.all.find do |zone|
-              name == zone.name.downcase
-            end.id
-          else
-            default_value
-          end
+          find_zone_by_name(definition, default_value)
         end
       end
 
-      def resolve_service_offering(definition, default_value = nil)
+      def find_zone_by_name(definition, default_value = nil)
+        if definition['zone_name']
+          name = definition['zone_name'].downcase
+          @fog_compute.zones.all.find do |zone|
+            name == zone.name.downcase
+          end.id
+        else
+          default_value
+        end
+      end
+
+      def find_service_offering(definition, default_value = nil)
         if definition['service_offering_id']
           definition['service_offering_id']
         else
-          if definition['service_offering_name']
-            name = definition['service_offering_name'].downcase
-            @fog_compute.flavors.all.find do |service_offering|
-              name == service_offering.name.downcase
-            end.id
-          else
-            default_value
-          end
+          find_service_offering_by_name(definition, default_value)
         end
       end
 
-      def resolve_disk_offering(definition, default_value = nil)
+      def find_service_offering_by_name(definition, default_value = nil)
+        if definition['service_offering_name']
+          name = definition['service_offering_name'].downcase
+          @fog_compute.flavors.all.find do |service_offering|
+            name == service_offering.name.downcase
+          end.id
+        else
+          default_value
+        end
+      end
+
+      def find_disk_offering(definition, default_value = nil)
         if definition['disk_offering_id']
           definition['disk_offering_id']
         else
-          if definition['disk_offering_name']
-            name = definition['disk_offering_name'].downcase
-            @fog_compute.disk_offerings.all.find do |disk_offering|
-              name == disk_offering.name.downcase
-            end.id
-          else
-            default_value
-          end
+          find_disk_offering_by_name(definition, default_value)
         end
       end
 
-      def resolve_source_template(definition, default_value = nil)
+      def find_disk_offering_by_name(definition, default_value = nil)
+        if definition['disk_offering_name']
+          name = definition['disk_offering_name'].downcase
+          @fog_compute.disk_offerings.all.find do |disk_offering|
+            name == disk_offering.name.downcase
+          end.id
+        else
+          default_value
+        end
+      end
+
+      def find_source_template(definition, default_value = nil)
         if definition['source_template_id']
           definition['source_template_id']
         else
-          if definition['source_template_name']
-            name = definition['source_template_name'].downcase
-            templates = @fog_compute.images.all('templatefilter' => 'featured').select do |t|
-              if definition['zone_id']
-                t.zone_id == definition['zone_id']
-              else
-                true
-              end
-            end
-            templates.find do |t|
-              name == t.name.downcase
-            end.id
-          else
-            default_value
-          end
+          find_source_template_by_name(definition, default_value)
         end
       end
 
-      def resolve_network_names(definition, default_value = [])
+      def find_source_template_by_name(definition, default_value = nil)
+        if definition['source_template_name']
+          name = definition['source_template_name'].downcase
+          templates(definition['zone_id']).find do |t|
+            name == t.name.downcase
+          end.id
+        else
+          default_value
+        end
+      end
+
+      def templates(zone_id = nil)
+        templates = @fog_compute.images.all('templatefilter' => 'featured')
+        if zone_id
+          templates.select { |t| t.zone_id == zone_id }
+        else
+          templates
+        end
+      end
+
+      def find_networks(definition, default_value = [])
         if definition['network_ids']
           Array(definition['network_ids'])
         else
-          if definition['network_names']
-            names = Array(names).map(&:downcase)
-            networks = @fog_compute.networks.all.select do |network|
-              if definition['zone_id']
-                network.zone_id == definition['zone_id']
-              else
-                true
-              end
-            end
-            networks.find do |network|
-              names.include?(network.name.downcase)
-            end.map(&:id)
-          else
-            default_value
-          end
+          find_networks_by_name(definition, default_value)
+        end
+      end
+
+      def find_networks_by_name(definition, default_value = [])
+        if definition['network_names']
+          names = Array(names).map(&:downcase)
+          networks(definition['zone_id']).find do |network|
+            names.include?(network.name.downcase)
+          end.map(&:id)
+        else
+          default_value
+        end
+      end
+
+      def networks(zone_id = nil)
+        networks = @fog_compute.networks.all
+        if zone_id
+          networks.select { |network| network.zone_id == zone_id }
+        else
+          networks
         end
       end
     end
