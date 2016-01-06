@@ -7,7 +7,7 @@ module Packer
   module Builders # :nodoc:
     def self.load(template, definition, options={})
       type = definition['type']
-      require "packer/builders/#{type}"
+      require "packer/builders/#{type.tr('-', '_')}"
       klass_name = type.downcase.scan(/\w+/).map(&:capitalize).join
       klass = Packer::Builders.const_get(klass_name)
       klass.new(template, definition, options)

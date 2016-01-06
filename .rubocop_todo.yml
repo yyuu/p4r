@@ -37,13 +37,6 @@ Metrics/MethodLength:
 Metrics/PerceivedComplexity:
   Max: 21
 
-# Offense count: 2
-# Configuration parameters: Exclude.
-Style/FileName:
-  Exclude:
-    - 'lib/packer/builders/amazon-ebs.rb'
-    - 'lib/packer/builders/amazon-instance.rb'
-
 # Offense count: 1
 # Configuration parameters: SupportedStyles.
 Style/RaiseArgs:

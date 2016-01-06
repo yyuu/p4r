@@ -4,7 +4,7 @@ module Packer
   module Provisioners # :nodoc:
     def self.load(template, definition, options={})
       type = definition['type']
-      require "packer/provisioners/#{type}"
+      require "packer/provisioners/#{type.tr('-', '_')}"
       klass_name = type.downcase.scan(/\w+/).map(&:capitalize).join
       klass = Packer::Provisioners.const_get(klass_name)
       klass.new(template, definition, options)

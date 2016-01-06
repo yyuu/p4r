@@ -72,7 +72,7 @@ module Packer
         klass = Packer::Commands.const_get(klass_name)
       rescue NameError
         begin
-          require "packer/commands/#{name}"
+          require "packer/commands/#{name.tr('-', '_')}"
         rescue LoadError
           raise(OptionParser::ParseError.new("unknown command: #{name}"))
         end
