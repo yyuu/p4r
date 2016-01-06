@@ -49,10 +49,9 @@ module Packer
 
       def delete_ssh_keypair(tmpdir)
         debug('Deleting temporary ssh keypair....')
-        if tmpdir
-          FileUtils.rm_rf(tmpdir)
-          debug("Deleted temporary ssh keypair in #{tmpdir.dump}.")
-        end
+        return unless tmpdir
+        FileUtils.rm_rf(tmpdir)
+        debug("Deleted temporary ssh keypair in #{tmpdir.dump}.")
       end
     end
   end

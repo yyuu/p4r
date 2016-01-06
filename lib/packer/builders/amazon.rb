@@ -106,14 +106,13 @@ module Packer
 
       def delete_machine(name, options={})
         debug('Deleting temporary machine....')
-        if name
-          if options[:dry_run]
-            # nop
-          else
-            @machine.destroy if @machine
-          end
-          debug("Deleted temporary machine #{name.inspect}.")
+        return unless name
+        if options[:dry_run]
+          # nop
+        else
+          @machine.destroy if @machine
         end
+        debug("Deleted temporary machine #{name.inspect}.")
       end
 
       def create_key_pair(name, public_key, options={})
@@ -133,16 +132,16 @@ module Packer
 
       def delete_key_pair(name, public_key, options={})
         debug('Deleting temporary key pair....')
-        if name && public_key
-          if options[:dry_run]
-            # nop
-          else
-            if @fog_compute && (key_pair = @fog_compute.key_pairs.get(name))
-              key_pair.destroy
-            end
+        return unless name
+        return unless public_key
+        if options[:dry_run]
+          # nop
+        else
+          if @fog_compute && (key_pair = @fog_compute.key_pairs.get(name))
+            key_pair.destroy
           end
-          debug("Deleted temporary key pair #{name.inspect}.")
         end
+        debug("Deleted temporary key pair #{name.inspect}.")
       end
 
       def create_security_group(name, options={})
@@ -161,16 +160,15 @@ module Packer
 
       def delete_security_group(name, options={})
         debug('Deleting temporary security group....')
-        if name
-          if options[:dry_run]
-            # nop
-          else
-            if @fog_compute && (security_group = @fog_compute.security_groups.get(name))
-              security_group.destroy
-            end
+        return unless name
+        if options[:dry_run]
+          # nop
+        else
+          if @fog_compute && (security_group = @fog_compute.security_groups.get(name))
+            security_group.destroy
           end
-          debug("Deleted temporary security group #{name.inspect}.")
         end
+        debug("Deleted temporary security group #{name.inspect}.")
       end
     end
   end

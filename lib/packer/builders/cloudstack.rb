@@ -182,14 +182,13 @@ module Packer
 
       def delete_machine(name, options={})
         debug('Deleting temporary machine....')
-        if name
-          if options[:dry_run]
-            # nop
-          else
-            @machine.destroy if @machine
-          end
-          debug("Deleted temporary machine #{name.inspect}.")
+        return unless name
+        if options[:dry_run]
+          # nop
+        else
+          @machine.destroy if @machine
         end
+        debug("Deleted temporary machine #{name.inspect}.")
       end
 
       def create_key_pair(name, public_key, options={})
@@ -211,70 +210,61 @@ module Packer
 
       def delete_key_pair(name, public_key, options={})
         debug('Deleting temporary key pair....')
-        if name && public_key
-          if options[:dry_run]
-            # nop
-          else
-            key_pairs = @fog_compute.list_ssh_key_pairs['listsshkeypairsresponse']['sshkeypair']
-            if @fog_compute && key_pairs.any? { |key_pair| key_pair['name'] == name }
-              response = @fog_compute.delete_ssh_key_pair(name: name)
-              unless response.key?('deletesshkeypairresponse')
-                fail("failed to delete key pair: #{response.inspect}")
-              end
+        return unless name && public_key
+        if options[:dry_run]
+          # nop
+        else
+          key_pairs = @fog_compute.list_ssh_key_pairs['listsshkeypairsresponse']['sshkeypair']
+          if @fog_compute && key_pairs.any? { |key_pair| key_pair['name'] == name }
+            response = @fog_compute.delete_ssh_key_pair(name: name)
+            unless response.key?('deletesshkeypairresponse')
+              fail("failed to delete key pair: #{response.inspect}")
             end
           end
-          debug("Deleted temporary key pair #{name.inspect}.")
         end
+        debug("Deleted temporary key pair #{name.inspect}.")
       end
 
       def create_security_group(name, options={})
         debug('Creating temporary public IP address....')
-        if options[:dry_run]
-          # nop
-        else
-          @cloudstack_ip_address_id = @fog_compute.associate_ip_address(fordisplay: name, zoneid: @cloudstack_zone_id)['associateipaddressresponse']['id']
-          begin
-            ip_address = @fog_compute.public_ip_addresses.get(@cloudstack_ip_address_id)
-          rescue => error
-            warn("failed to get public ip address: #{@cloudstack_ip_address_id.inspect}: #{error}")
-            sleep(rand(10))
-            retry
-          end
-          ip_address.wait_for do
-            ready?
-          end
-          @cloudstack_ip_address = ip_address.ip_address
-          firewall_rule_id = @fog_compute.create_firewall_rule(ipaddressid: @cloudstack_ip_address_id, protocol: 'TCP', cidrlist: '0.0.0.0/0', endport: 22, fordisplay: name, startport: 22)['createfirewallruleresponse']['id']
-          begin
-            firewall_rule = @fog_compute.firewall_rules.get(firewall_rule_id)
-          rescue => error
-            warn("failed to get firewall rule: #{firewall_rule_id.inspect}: #{error}")
-            sleep(rand(10))
-            retry
-          end
-          firewall_rule.wait_for do
-            persisted?
-          end
-          debug("Created temporary public IP address #{@cloudstack_ip_address_id.inspect}.")
+        return if options[:dry_run]
+        @cloudstack_ip_address_id = @fog_compute.associate_ip_address(fordisplay: name, zoneid: @cloudstack_zone_id)['associateipaddressresponse']['id']
+        begin
+          ip_address = @fog_compute.public_ip_addresses.get(@cloudstack_ip_address_id)
+        rescue => error
+          warn("failed to get public ip address: #{@cloudstack_ip_address_id.inspect}: #{error}")
+          sleep(rand(10))
+          retry
         end
+        ip_address.wait_for do
+          ready?
+        end
+        @cloudstack_ip_address = ip_address.ip_address
+        firewall_rule_id = @fog_compute.create_firewall_rule(ipaddressid: @cloudstack_ip_address_id, protocol: 'TCP', cidrlist: '0.0.0.0/0', endport: 22, fordisplay: name, startport: 22)['createfirewallruleresponse']['id']
+        begin
+          firewall_rule = @fog_compute.firewall_rules.get(firewall_rule_id)
+        rescue => error
+          warn("failed to get firewall rule: #{firewall_rule_id.inspect}: #{error}")
+          sleep(rand(10))
+          retry
+        end
+        firewall_rule.wait_for do
+          persisted?
+        end
+        debug("Created temporary public IP address #{@cloudstack_ip_address_id.inspect}.")
       end
 
       def delete_security_group(name, options={})
         debug('Deleting temporary public IP address....')
-        if name
-          if options[:dry_run]
-            # nop
-          else
-            if @cloudstack_ip_address_id
-              response = @fog_compute.disassociate_ip_address(id: @cloudstack_ip_address_id)
-              @cloudstack_ip_address_id = nil
-              unless response.key?('disassociateipaddressresponse')
-                fail("failed to delete temporary ip address: #{response.inspect}")
-              end
-              debug('Deleted temporary public IP address.')
-            end
-          end
+        return unless name
+        return if options[:dry_run]
+        return unless @cloudstack_ip_address_id
+        response = @fog_compute.disassociate_ip_address(id: @cloudstack_ip_address_id)
+        @cloudstack_ip_address_id = nil
+        unless response.key?('disassociateipaddressresponse')
+          fail("failed to delete temporary ip address: #{response.inspect}")
         end
+        debug('Deleted temporary public IP address.')
       end
     end
   end
