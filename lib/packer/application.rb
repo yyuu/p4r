@@ -1,9 +1,9 @@
 #!/usr/bin/env ruby
 
-require "logger"
-require "optparse"
-require "packer/commands"
-require "packer/version"
+require 'logger'
+require 'optparse'
+require 'packer/commands'
+require 'packer/version'
 
 module Packer
   class Application
@@ -26,7 +26,7 @@ module Packer
     def main(argv=[])
       args = @optparse.order(argv)
       begin
-        command = ( args.shift || "help" )
+        command = ( args.shift || 'help' )
         get_command(command).tap do |cmd|
           @optparse.banner = "Usage: packer #{command} [options]"
           cmd.define_options(@optparse, @options)
@@ -38,7 +38,7 @@ module Packer
         end
       rescue OptionParser::ParseError => error
         STDERR.puts("packer: #{error.message}")
-        get_command("help").tap do |cmd|
+        get_command('help').tap do |cmd|
           cmd.run([], @options)
         end
         exit(1)
@@ -49,17 +49,17 @@ module Packer
 
     private
     def define_options()
-      @optparse.on("-d", "--[no-]debug", "Enable debug mode") do |v|
+      @optparse.on('-d', '--[no-]debug', 'Enable debug mode') do |v|
         @options[:debug] = v
       end
-      @optparse.on("--[no-]dry-run", "Enable dry run") do |v|
+      @optparse.on('--[no-]dry-run', 'Enable dry run') do |v|
         @options[:dry_run] = v
       end
-      @optparse.on("--var KEY_VALUE", "Variable for template") do |v|
+      @optparse.on('--var KEY_VALUE', 'Variable for template') do |v|
         key, val = v.split(/\s*=\s*/, 2)
-        @options[:variables][key.strip] = (val || "").strip
+        @options[:variables][key.strip] = (val || '').strip
       end
-      @optparse.on("--var-file PATH", "JSON file containing user variables") do |v|
+      @optparse.on('--var-file PATH', 'JSON file containing user variables') do |v|
         @options[:variables] = @options[:variables].merge(MultiJson.load(File.read(v)))
       end
     end
@@ -81,7 +81,7 @@ module Packer
         begin
           klass = Packer::Commands.const_get(klass_name)
         rescue NameError
-          require "packer/commands/help"
+          require 'packer/commands/help'
           klass = Packer::Commands::Help
         end
       end

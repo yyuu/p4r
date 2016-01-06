@@ -4,7 +4,7 @@ module Packer
   module Provisioners
     class Shell < NullProvisioner
       def apply(builder, options={})
-        inline = @definition["inline"].join("\n")
+        inline = @definition['inline'].join("\n")
         builder.run(inline, options)
       end
     end

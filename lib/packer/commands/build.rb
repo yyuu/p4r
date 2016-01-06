@@ -1,6 +1,6 @@
 #!/usr/bin/env ruby
 
-require "parallel"
+require 'parallel'
 
 module Packer
   module Commands

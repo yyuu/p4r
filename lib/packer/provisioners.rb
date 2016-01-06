@@ -3,7 +3,7 @@
 module Packer
   module Provisioners
     def self.load(template, definition, options={})
-      type = definition["type"]
+      type = definition['type']
       require "packer/provisioners/#{type}"
       klass_name = type.downcase.scan(/\w+/).map { |s| s.capitalize }.join
       klass = Packer::Provisioners.const_get(klass_name)

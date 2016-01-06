@@ -150,7 +150,7 @@ module Packer
             ready?
           end
 
-          port_forwarding_rule_id = @fog_compute.create_port_forwarding_rule(ipaddressid: @cloudstack_ip_address_id, privateport: 22, protocol: "TCP", publicport: 22, virtualmachineid: @machine.id, fordisplay: name)['createportforwardingruleresponse']['id']
+          port_forwarding_rule_id = @fog_compute.create_port_forwarding_rule(ipaddressid: @cloudstack_ip_address_id, privateport: 22, protocol: 'TCP', publicport: 22, virtualmachineid: @machine.id, fordisplay: name)['createportforwardingruleresponse']['id']
           begin
             port_forwarding_rule = @fog_compute.port_forwarding_rules.get(port_forwarding_rule_id)
           rescue => error
@@ -272,7 +272,7 @@ module Packer
               unless response.key?('disassociateipaddressresponse')
                 raise("failed to delete temporary ip address: #{response.inspect}")
               end
-              debug("Deleted temporary public IP address.")
+              debug('Deleted temporary public IP address.')
             end
           end
         end

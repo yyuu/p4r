@@ -211,12 +211,6 @@ Style/SpecialGlobalVars:
     - 'lib/packer/commands/help.rb'
     - 'lib/packer/commands/version.rb'
 
-# Offense count: 35
-# Cop supports --auto-correct.
-# Configuration parameters: EnforcedStyle, SupportedStyles.
-Style/StringLiterals:
-  Enabled: false
-
 # Offense count: 5
 # Cop supports --auto-correct.
 # Configuration parameters: IgnoredMethods.
