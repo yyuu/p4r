@@ -37,14 +37,6 @@ Metrics/MethodLength:
 Metrics/PerceivedComplexity:
   Max: 21
 
-# Offense count: 5
-# Cop supports --auto-correct.
-# Configuration parameters: EnforcedStyle, SupportedStyles.
-Style/AndOr:
-  Exclude:
-    - 'lib/packer/builders/amazon.rb'
-    - 'lib/packer/builders/cloudstack.rb'
-
 # Offense count: 8
 # Cop supports --auto-correct.
 # Configuration parameters: EnforcedStyle, SupportedStyles, ProceduralMethods, FunctionalMethods, IgnoredMethods.

@@ -138,11 +138,11 @@ module Packer
 
       def delete_key_pair(name, public_key, options={})
         debug('Deleting temporary key pair....')
-        if name and public_key
+        if name && public_key
           if options[:dry_run]
             # nop
           else
-            if @fog_compute and (key_pair = @fog_compute.key_pairs.get(name))
+            if @fog_compute && (key_pair = @fog_compute.key_pairs.get(name))
               key_pair.destroy
             end
           end
@@ -170,7 +170,7 @@ module Packer
           if options[:dry_run]
             # nop
           else
-            if @fog_compute and (security_group = @fog_compute.security_groups.get(name))
+            if @fog_compute && (security_group = @fog_compute.security_groups.get(name))
               security_group.destroy
             end
           end

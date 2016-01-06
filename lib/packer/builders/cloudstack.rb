@@ -212,12 +212,12 @@ module Packer
 
       def delete_key_pair(name, public_key, options={})
         debug('Deleting temporary key pair....')
-        if name and public_key
+        if name && public_key
           if options[:dry_run]
             # nop
           else
             key_pairs = @fog_compute.list_ssh_key_pairs['listsshkeypairsresponse']['sshkeypair']
-            if @fog_compute and key_pairs.any? { |key_pair| key_pair['name'] == name }
+            if @fog_compute && key_pairs.any? { |key_pair| key_pair['name'] == name }
               response = @fog_compute.delete_ssh_key_pair(name: name)
               unless response.key?('deletesshkeypairresponse')
                 raise("failed to delete key pair: #{response.inspect}")
