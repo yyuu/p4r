@@ -40,8 +40,8 @@ module Packer
               end
             end
           end
-        rescue Interrupt
-          # nop
+        rescue Interrupt => error
+          STDERR.puts(error)
         end
 
         if status.all?
