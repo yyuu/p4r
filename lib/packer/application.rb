@@ -7,7 +7,7 @@ require 'packer/version'
 
 module Packer
   class Application
-    def initialize()
+    def initialize
       @logger = Logger.new(STDERR).tap do |logger|
 #       logger.level = Logger::INFO
         logger.level = Logger::DEBUG
@@ -48,7 +48,7 @@ module Packer
     end
 
     private
-    def define_options()
+    def define_options
       @optparse.on('-d', '--[no-]debug', 'Enable debug mode') do |v|
         @options[:debug] = v
       end
