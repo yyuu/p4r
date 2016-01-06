@@ -64,49 +64,50 @@ module Packer
           key_name: @amazon_key_pair
         }
         if @definition.key?('launch_block_device_mappings')
-          create_options[:block_device_mapping] = @definition['launch_block_device_mappings'].map do |mapping|
-            data = { 'DeviceName' => mapping['device_name'] }
-            if mapping.key?('delete_on_termination')
-              data['Ebs.DeleteOnTermination'] = mapping['delete_on_termination']
-            end
-            if mapping.key?('volume_size')
-              data['Ebs.VolumeSize'] = mapping['volume_size']
-            end
-            if mapping.key?('virtual_name')
-              data['VirtualName'] = mapping['virtual_name']
-            end
-            data
-          end
+          create_options[:block_device_mapping] = prepare_block_device_mappings(@definition['launch_block_device_mappings'])
         end
-        if options[:dry_run]
-          info("Creating temporary machine #{name.inspect} as #{create_options.inspect}.")
-        else
-          debug("Creating temporary machine #{name.inspect} as #{create_options.inspect}.")
-          @machine = @fog_compute.servers.create(create_options)
-          debug("Waiting for temporary machine #{name.inspect} to be available....")
-          @machine.wait_for do
-            ready?
+        info("Creating temporary machine #{name.inspect} as #{create_options.inspect}.")
+        return if options[:dry_run]
+        debug("Creating temporary machine #{name.inspect} as #{create_options.inspect}.")
+        @machine = @fog_compute.servers.create(create_options)
+        debug("Waiting for temporary machine #{name.inspect} to be available....")
+        @machine.wait_for do
+          ready?
+        end
+        @fog_compute.tags.create(key: 'Name', value: name, resource_id: @machine.id, resource_type: 'instance')
+        @machine.ssh_options = {
+          paranoid: false,
+          user_known_hosts_file: '/dev/null'
+        }
+        if @definition.key?('ssh_username')
+          @machine.username = @definition['ssh_username']
+        end
+        @machine.private_key_path = @ssh_private_key
+        debug("Waiting for temporary machine #{name.inspect} to be available via ssh....")
+        @machine.wait_for do
+          sshable?
+        end
+        debug("Created temporary machine #{name.inspect} as #{create_options.inspect}.")
+      end
+
+      def prepare_block_device_mappings(block_device_mappings = [])
+        block_device_mappings.map do |mapping|
+          data = { 'DeviceName' => mapping['device_name'] }
+          if mapping.key?('delete_on_termination')
+            data['Ebs.DeleteOnTermination'] = mapping['delete_on_termination']
           end
-          @fog_compute.tags.create(key: 'Name', value: name, resource_id: @machine.id, resource_type: 'instance')
-          @machine.ssh_options = {
-            paranoid: false,
-            user_known_hosts_file: '/dev/null'
-          }
-          if @definition.key?('ssh_username')
-            @machine.username = @definition['ssh_username']
+          if mapping.key?('volume_size')
+            data['Ebs.VolumeSize'] = mapping['volume_size']
           end
-          @machine.private_key_path = @ssh_private_key
-          debug("Waiting for temporary machine #{name.inspect} to be available via ssh....")
-          @machine.wait_for do
-            sshable?
+          if mapping.key?('virtual_name')
+            data['VirtualName'] = mapping['virtual_name']
           end
-          debug("Created temporary machine #{name.inspect} as #{create_options.inspect}.")
+          data
         end
       end
 
       def delete_machine(name, options = {})
         debug('Deleting temporary machine....')
-        return unless name
         if options[:dry_run]
           # nop
         else
@@ -130,16 +131,11 @@ module Packer
         end
       end
 
-      def delete_key_pair(name, public_key, options = {})
+      def delete_key_pair(name, _public_key, options = {})
         debug('Deleting temporary key pair....')
-        return unless name
-        return unless public_key
-        if options[:dry_run]
-          # nop
-        else
-          if @fog_compute && (key_pair = @fog_compute.key_pairs.get(name))
-            key_pair.destroy
-          end
+        return if options[:dry_run]
+        if @fog_compute && (key_pair = @fog_compute.key_pairs.get(name))
+          key_pair.destroy
         end
         debug("Deleted temporary key pair #{name.inspect}.")
       end
@@ -160,13 +156,9 @@ module Packer
 
       def delete_security_group(name, options = {})
         debug('Deleting temporary security group....')
-        return unless name
-        if options[:dry_run]
-          # nop
-        else
-          if @fog_compute && (security_group = @fog_compute.security_groups.get(name))
-            security_group.destroy
-          end
+        return if options[:dry_run]
+        if @fog_compute && (security_group = @fog_compute.security_groups.get(name))
+          security_group.destroy
         end
         debug("Deleted temporary security group #{name.inspect}.")
       end

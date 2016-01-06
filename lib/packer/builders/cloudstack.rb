@@ -87,43 +87,40 @@ module Packer
         if @cloudstack_network_ids
           create_options[:network_ids] = Array(@cloudstack_network_ids).join(',')
         end
-        if options[:dry_run]
-          info("Creating temporary machine #{name.inspect} as #{create_options.inspect}.")
-        else
-          debug("Creating temporary machine #{name.inspect} as #{create_options.inspect}.")
-          @machine = @fog_compute.servers.create(create_options)
-          debug("Waiting for temporary machine #{name.inspect} to be available....")
-          @machine.wait_for do
-            ready?
-          end
-
-          port_forwarding_rule_id = @fog_compute.create_port_forwarding_rule(ipaddressid: @cloudstack_ip_address_id, privateport: 22, protocol: 'TCP', publicport: 22, virtualmachineid: @machine.id, fordisplay: name)['createportforwardingruleresponse']['id']
-          begin
-            port_forwarding_rule = @fog_compute.port_forwarding_rules.get(port_forwarding_rule_id)
-          rescue => error
-            warn("failed to get port forwarding rule: #{port_forwarding_rule_id.inspect}: #{error}")
-            sleep(rand(10))
-            retry
-          end
-          port_forwarding_rule.wait_for do
-            persisted?
-          end
-          @machine.ssh_ip_address = @cloudstack_ip_address
-          @machine.ssh_options = {
-            paranoid: false,
-            user_known_hosts_file: '/dev/null'
-          }
-          if @definition.key?('ssh_username')
-            @machine.username = @definition['ssh_username']
-          end
-          @machine.private_key_path = @ssh_private_key
-          debug("Waiting for temporary machine #{name.inspect} to be available via ssh....")
-
-          @machine.wait_for do
-            sshable?
-          end
-          debug("Created temporary machine #{name.inspect} as #{create_options.inspect}.")
+        info("Creating temporary machine #{name.inspect} as #{create_options.inspect}.")
+        return if options[:dry_run]
+        @machine = @fog_compute.servers.create(create_options)
+        debug("Waiting for temporary machine #{name.inspect} to be available....")
+        @machine.wait_for do
+          ready?
         end
+
+        port_forwarding_rule_id = @fog_compute.create_port_forwarding_rule(ipaddressid: @cloudstack_ip_address_id, privateport: 22, protocol: 'TCP', publicport: 22, virtualmachineid: @machine.id, fordisplay: name)['createportforwardingruleresponse']['id']
+        begin
+          port_forwarding_rule = @fog_compute.port_forwarding_rules.get(port_forwarding_rule_id)
+        rescue => error
+          warn("failed to get port forwarding rule: #{port_forwarding_rule_id.inspect}: #{error}")
+          sleep(rand(10))
+          retry
+        end
+        port_forwarding_rule.wait_for do
+          persisted?
+        end
+        @machine.ssh_ip_address = @cloudstack_ip_address
+        @machine.ssh_options = {
+          paranoid: false,
+          user_known_hosts_file: '/dev/null'
+        }
+        if @definition.key?('ssh_username')
+          @machine.username = @definition['ssh_username']
+        end
+        @machine.private_key_path = @ssh_private_key
+        debug("Waiting for temporary machine #{name.inspect} to be available via ssh....")
+
+        @machine.wait_for do
+          sshable?
+        end
+        debug("Created temporary machine #{name.inspect} as #{create_options.inspect}.")
       end
 
       def delete_machine(name, options = {})
@@ -154,18 +151,14 @@ module Packer
         end
       end
 
-      def delete_key_pair(name, public_key, options = {})
+      def delete_key_pair(name, _public_key, options = {})
         debug('Deleting temporary key pair....')
-        return unless name && public_key
-        if options[:dry_run]
-          # nop
-        else
-          key_pairs = @fog_compute.list_ssh_key_pairs['listsshkeypairsresponse']['sshkeypair']
-          if @fog_compute && key_pairs.any? { |key_pair| key_pair['name'] == name }
-            response = @fog_compute.delete_ssh_key_pair(name: name)
-            unless response.key?('deletesshkeypairresponse')
-              fail("failed to delete key pair: #{response.inspect}")
-            end
+        return if options[:dry_run]
+        key_pairs = @fog_compute.list_ssh_key_pairs['listsshkeypairsresponse']['sshkeypair']
+        if @fog_compute && key_pairs.any? { |key_pair| key_pair['name'] == name }
+          response = @fog_compute.delete_ssh_key_pair(name: name)
+          unless response.key?('deletesshkeypairresponse')
+            fail("failed to delete key pair: #{response.inspect}")
           end
         end
         debug("Deleted temporary key pair #{name.inspect}.")
@@ -202,15 +195,13 @@ module Packer
 
       def delete_security_group(name, options = {})
         debug('Deleting temporary public IP address....')
-        return unless name
         return if options[:dry_run]
-        return unless @cloudstack_ip_address_id
         response = @fog_compute.disassociate_ip_address(id: @cloudstack_ip_address_id)
         @cloudstack_ip_address_id = nil
         unless response.key?('disassociateipaddressresponse')
           fail("failed to delete temporary ip address: #{response.inspect}")
         end
-        debug('Deleted temporary public IP address.')
+        debug("Deleted temporary public IP address #{name.inspect}.")
       end
 
       def resolve_zone(definition, default_value = nil)
