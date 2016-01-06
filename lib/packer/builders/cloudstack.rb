@@ -125,6 +125,7 @@ module Packer
       end
 
       private
+
       def create_machine(name, options={})
         create_options = {
           flavor_id: @cloudstack_service_offering_id,

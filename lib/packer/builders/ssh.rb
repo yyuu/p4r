@@ -35,6 +35,7 @@ module Packer
       end
 
       private
+
       def create_ssh_keypair(tmpdir)
         cmdline = Shellwords.shelljoin(['ssh-keygen', '-N', '', '-f', File.join(tmpdir, 'identity')])
         if system(cmdline)

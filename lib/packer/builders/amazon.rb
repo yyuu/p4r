@@ -59,6 +59,7 @@ module Packer
       end
 
       private
+
       def create_machine(name, options={})
         create_options = {
           flavor_id: @definition['instance_type'],

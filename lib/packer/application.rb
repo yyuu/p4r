@@ -48,6 +48,7 @@ module Packer
     end
 
     private
+
     def define_options
       @optparse.on('-d', '--[no-]debug', 'Enable debug mode') do |v|
         @options[:debug] = v

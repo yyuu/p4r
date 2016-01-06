@@ -54,15 +54,6 @@ Style/CommentIndentation:
 Style/Documentation:
   Enabled: false
 
-# Offense count: 4
-# Cop supports --auto-correct.
-Style/EmptyLinesAroundAccessModifier:
-  Exclude:
-    - 'lib/packer/application.rb'
-    - 'lib/packer/builders/amazon.rb'
-    - 'lib/packer/builders/cloudstack.rb'
-    - 'lib/packer/builders/ssh.rb'
-
 # Offense count: 2
 # Configuration parameters: Exclude.
 Style/FileName:
