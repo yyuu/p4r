@@ -1,5 +1,7 @@
 # p4r
 
+[![Build Status](https://travis-ci.org/yyuu/p4r.svg?branch=master)](https://travis-ci.org/yyuu/p4r)
+
 Yet another command-line tools to build machine image on cloud platforms.
 
 ## Installation
