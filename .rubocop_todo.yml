@@ -37,12 +37,6 @@ Metrics/MethodLength:
 Metrics/PerceivedComplexity:
   Max: 21
 
-# Offense count: 3
-Style/CaseEquality:
-  Exclude:
-    - 'lib/packer/builders.rb'
-    - 'lib/packer/commands/build.rb'
-
 # Offense count: 1
 # Cop supports --auto-correct.
 Style/CommentIndentation:

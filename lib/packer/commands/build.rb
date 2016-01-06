@@ -16,7 +16,7 @@ module Packer
               template.build(options)
               true
             rescue => error
-              if Array === error.backtrace
+              if error.backtrace.is_a?(Array)
                 logger.error("#{$$} : " + ([error.to_s] + error.backtrace.map { |s| "\t" + s }).join("\n"))
               else
                 logger.error("#{$$} : " + error.to_s)
@@ -33,7 +33,7 @@ module Packer
             begin
               template.teardown(options)
             rescue => error
-              if Array === error.backtrace
+              if error.backtrace.is_a?(Array)
                 logger.warn("#{$$} : " + ([error.to_s] + error.backtrace.map { |s| "\t" + s }).join("\n"))
               else
                 logger.warn("#{$$} : " + error.to_s)

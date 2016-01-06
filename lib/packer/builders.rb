@@ -70,7 +70,7 @@ module Packer
             yield
             return true
           rescue => error
-            if Array === error.backtrace
+            if error.backtrace.is_a?(Array)
               warn(([error.to_s] + error.backtrace.map { |s| "\t" + s }).join("\n"))
             else
               warn(error.to_s)
