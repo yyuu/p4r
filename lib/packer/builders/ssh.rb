@@ -23,7 +23,7 @@ module Packer
       end
 
       def hostname
-        raise(NotImplementedError)
+        fail(NotImplementedError)
       end
 
       def put(source, destination, _options={})
@@ -43,7 +43,7 @@ module Packer
           @ssh_public_key = File.join(tmpdir, 'identity.pub')
           debug("Generated temporary ssh keypair in #{tmpdir.dump}.")
         else
-          raise("failed: #{cmdline}")
+          fail("failed: #{cmdline}")
         end
       end
 

@@ -12,7 +12,7 @@ module Packer
           if @machine
             @machine.ssh_ip_address
           else
-            raise('invalid state')
+            fail('invalid state')
           end
         end
       end

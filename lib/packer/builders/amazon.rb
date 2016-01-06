@@ -127,7 +127,7 @@ module Packer
           end
           debug("Created temporary key pair #{name.inspect} from #{public_key.inspect}.")
         else
-          raise("key pair already exists: #{name.inspect}")
+          fail("key pair already exists: #{name.inspect}")
         end
       end
 
@@ -155,7 +155,7 @@ module Packer
           end
           debug("Created temporary security group #{name.inspect}.")
         else
-          raise("security group already exists: #{name.inspect}")
+          fail("security group already exists: #{name.inspect}")
         end
       end
 

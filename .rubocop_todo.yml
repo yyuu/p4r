@@ -101,17 +101,6 @@ Style/RedundantSelf:
     - 'lib/packer/builders.rb'
     - 'lib/packer/provisioners.rb'
 
-# Offense count: 11
-# Cop supports --auto-correct.
-# Configuration parameters: EnforcedStyle, SupportedStyles.
-Style/SignalException:
-  Exclude:
-    - 'lib/packer/builders/amazon-ebs.rb'
-    - 'lib/packer/builders/amazon-instance.rb'
-    - 'lib/packer/builders/amazon.rb'
-    - 'lib/packer/builders/cloudstack.rb'
-    - 'lib/packer/builders/ssh.rb'
-
 # Offense count: 60
 # Cop supports --auto-correct.
 # Configuration parameters: SupportedStyles.

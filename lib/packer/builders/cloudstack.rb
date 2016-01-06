@@ -119,7 +119,7 @@ module Packer
           if @machine
             @machine.ssh_ip_address
           else
-            raise('invalid state')
+            fail('invalid state')
           end
         end
       end
@@ -195,14 +195,14 @@ module Packer
       def create_key_pair(name, public_key, options={})
         key_pairs = @fog_compute.list_ssh_key_pairs['listsshkeypairsresponse']['sshkeypair']
         if key_pairs.any? { |key_pair| key_pair['name'] == name }
-          raise("key pair already exists: #{name.inspect}")
+          fail("key pair already exists: #{name.inspect}")
         else
           if options[:dry_run]
             info("Creating temporary key pair #{name.inspect} from #{public_key.inspect}.")
           else
             response = @fog_compute.register_ssh_key_pair(name: name, publickey: File.read(public_key))
             unless response.key?('registersshkeypairresponse')
-              raise("failed to register key pair: #{response.inspect}")
+              fail("failed to register key pair: #{response.inspect}")
             end
           end
           debug("Created temporary key pair #{name.inspect} from #{public_key.inspect}.")
@@ -219,7 +219,7 @@ module Packer
             if @fog_compute && key_pairs.any? { |key_pair| key_pair['name'] == name }
               response = @fog_compute.delete_ssh_key_pair(name: name)
               unless response.key?('deletesshkeypairresponse')
-                raise("failed to delete key pair: #{response.inspect}")
+                fail("failed to delete key pair: #{response.inspect}")
               end
             end
           end
@@ -269,7 +269,7 @@ module Packer
               response = @fog_compute.disassociate_ip_address(id: @cloudstack_ip_address_id)
               @cloudstack_ip_address_id = nil
               unless response.key?('disassociateipaddressresponse')
-                raise("failed to delete temporary ip address: #{response.inspect}")
+                fail("failed to delete temporary ip address: #{response.inspect}")
               end
               debug('Deleted temporary public IP address.')
             end
