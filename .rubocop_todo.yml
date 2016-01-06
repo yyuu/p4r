@@ -50,12 +50,6 @@ Style/FileName:
     - 'lib/packer/builders/amazon-instance.rb'
 
 # Offense count: 1
-# Cop supports --auto-correct.
-Style/PerlBackrefs:
-  Exclude:
-    - 'lib/packer/commands.rb'
-
-# Offense count: 1
 # Configuration parameters: SupportedStyles.
 Style/RaiseArgs:
   EnforcedStyle: compact

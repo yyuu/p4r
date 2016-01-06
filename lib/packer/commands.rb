@@ -64,7 +64,7 @@ module Packer
 
       def prepare_string(prefix, s, variables={})
         s.gsub(/{{\s*#{Regexp.escape(prefix)}\s+`([^}]*)`\s*}}/) do
-          name = $1.strip
+          name = Regexp.last_match[1].strip
           if variables.key?(name)
             variables[name].to_s
           else
