@@ -10,9 +10,9 @@ module Packer
         parallelism = Parallel.processor_count
 
         begin
-          status = build_templates(templates, parallelism)
+          status = build_templates(templates, parallelism, options)
         ensure
-          clean_templates(templates, parallelism)
+          clean_templates(templates, parallelism, options)
         end
 
         if status.all?
@@ -25,7 +25,7 @@ module Packer
 
       private
 
-      def build_templates(templates, parallelism = 1)
+      def build_templates(templates, parallelism = 1, options = {})
         Parallel.map(templates, in_threads: parallelism) do |template|
           begin
             template.setup(options)
@@ -36,11 +36,12 @@ module Packer
             false
           end
         end
-      rescue Interrupt
+      rescue Interrupt => error
+        STDERR.puts(error)
         templates.map { false }
       end
 
-      def clean_templates(templates, parallelism = 1)
+      def clean_templates(templates, parallelism = 1, options = {})
         Parallel.each(templates, in_threads: parallelism) do |template|
           begin
             template.teardown(options)
@@ -53,8 +54,8 @@ module Packer
       end
 
       def print_error(error)
-        backtrace = Array(error.backtrace).map { |s| "\t" + s }
-        logger.warn("#{Process.pid} : " + ([error.to_s] + backtrace.join("\n")))
+        error_info = [error.to_s] + Array(error.backtrace).map { |s| "\t" + s }
+        logger.warn("#{Process.pid} : " + error_info.join("\n"))
       end
     end
   end

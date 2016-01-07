@@ -26,7 +26,7 @@ module Packer
         @cloudstack_security_group = "packer-#{build_id}"
 
         @cloudstack_zone_id = find_zone(definition)
-        @cloudstack_service_offering_id = find_service_offering_id(definition)
+        @cloudstack_service_offering_id = find_service_offering(definition)
         @cloudstack_disk_offering_id = find_disk_offering(definition)
         @cloudstack_source_template_id = find_source_template(definition.merge('zone_id' => @cloudstack_zone_id))
         @cloudstack_network_ids = find_networks(definition.merge('zone_id' => @cloudstack_zone_id))
@@ -51,11 +51,6 @@ module Packer
         do_with_retry do
           delete_machine(@cloudstack_machine, options)
         end
-      end
-
-      def build(options = {})
-        super
-        sleep(60)
       end
 
       def hostname
@@ -299,8 +294,8 @@ module Packer
 
       def find_networks_by_name(definition, default_value = [])
         if definition['network_names']
-          names = Array(names).map(&:downcase)
-          networks(definition['zone_id']).find do |network|
+          names = Array(definition['network_names']).map(&:downcase)
+          networks(definition['zone_id']).select do |network|
             names.include?(network.name.downcase)
           end.map(&:id)
         else
