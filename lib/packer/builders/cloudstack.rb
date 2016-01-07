@@ -115,7 +115,7 @@ module Packer
         @machine.wait_for do
           sshable?
         end
-        debug("Created temporary machine #{name.inspect} as #{create_options.inspect}.")
+        debug("Created temporary machine #{name.inspect} (#{@machine.id.inspect}).")
       end
 
       def delete_machine(name, options = {})
@@ -185,7 +185,7 @@ module Packer
         firewall_rule.wait_for do
           persisted?
         end
-        debug("Created temporary public IP address #{@cloudstack_ip_address_id.inspect}.")
+        debug("Created temporary public IP address #{@cloudstack_ip_address.inspect} (#{@cloudstack_ip_address_id.inspect}).")
       end
 
       def delete_security_group(name, options = {})
