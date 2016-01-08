@@ -6,14 +6,10 @@ module Packer
   module Builders
     class AmazonInstance < Amazon # :nodoc:
       def hostname
-        if options[:dry_run]
-          'amazon-instance'
+        if @machine
+          @machine.ssh_ip_address
         else
-          if @machine
-            @machine.ssh_ip_address
-          else
-            fail('invalid state')
-          end
+          fail('invalid state')
         end
       end
     end

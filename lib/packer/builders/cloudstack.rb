@@ -54,14 +54,10 @@ module Packer
       end
 
       def hostname
-        if options[:dry_run]
-          'cloudstack'
+        if @machine
+          @machine.ssh_ip_address
         else
-          if @machine
-            @machine.ssh_ip_address
-          else
-            fail('invalid state')
-          end
+          fail('invalid state')
         end
       end
 
