@@ -22,12 +22,12 @@ module Packer
     def build(options = {})
       parallelism = Parallel.processor_count
       Parallel.each(@builders, in_threads: parallelism) do |builder|
-        builder.build(options.dup)
-      end
-      Parallel.each(@builders, in_threads: parallelism) do |builder|
         @provisioners.each do |provisioner|
           provisioner.apply(builder, options.dup)
         end
+      end
+      Parallel.each(@builders, in_threads: parallelism) do |builder|
+        builder.build(options.dup)
       end
     end
 
