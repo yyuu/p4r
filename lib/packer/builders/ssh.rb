@@ -25,8 +25,7 @@ module Packer
       end
 
       def build(options = {})
-        p(:sleeping, 300)
-        sleep(300)
+        # nop
       end
 
       def hostname

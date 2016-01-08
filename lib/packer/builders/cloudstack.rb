@@ -30,6 +30,7 @@ module Packer
         @cloudstack_disk_offering_id = find_disk_offering(definition)
         @cloudstack_source_template_id = find_source_template(definition.merge('zone_id' => @cloudstack_zone_id))
         @cloudstack_network_ids = find_networks(definition.merge('zone_id' => @cloudstack_zone_id))
+        @cloudstack_template_os_type_id = find_template_os_type(definition)
       end
 
       def setup(options = {})
@@ -37,6 +38,11 @@ module Packer
         create_key_pair(@cloudstack_key_pair, @ssh_public_key, options)
         create_security_group(@cloudstack_security_group, options)
         create_machine(@cloudstack_machine, options)
+      end
+
+      def build(options = {})
+        super
+        create_machine_image(@definition['template_name'], options)
       end
 
       def teardown(options = {})
@@ -195,6 +201,62 @@ module Packer
         debug("Deleted temporary public IP address #{name.inspect}.")
       end
 
+      def create_machine_image(name, options = {})
+        volume_id = @machine.volumes.find { |volume| volume.type == 'ROOT' }.id
+        debug("Creating snapshot #{volume_id.inspect}....")
+        snapshot_id = @fog_compute.create_snapshot(volumeid: volume_id)['createsnapshotresponse']['id']
+        begin
+          snapshot = @fog_compute.list_snapshots(id: snapshot_id)['listsnapshotsresponse']['snapshot'].first
+        rescue => error
+          warn("failed to get snapshot: #{snapshot_id.inspect}: #{error}")
+          sleep(rand(10))
+          retry
+        end
+        while snapshot['state'] != 'BackedUp'
+          debug("snapshot is not ready: #{snapshot_id.inspect}: #{snapshot['state'].inspect}")
+          snapshot = @fog_compute.list_snapshots(id: snapshot_id)['listsnapshotsresponse']['snapshot'].first
+          sleep(rand(10))
+        end
+
+        source_template = @fog_compute.images.get(@cloudstack_source_template_id)
+        create_template_options = {
+          displaytext: name,
+          name: name,
+          ostypeid: @cloudstack_template_os_type_id,
+          passwordenabled: source_template.password_enabled,
+          snapshotid: snapshot_id
+        }.merge(Hash[source_template.details.map.with_index do |(key, value), i|
+          [:"details[#{i}].#{key}", value]
+        end])
+        info("Creating template #{name.inspect} as #{create_template_options.inspect}....")
+        create_template_response = @fog_compute.create_template(create_template_options)
+        template_id = create_template_response['createtemplateresponse']['id']
+        unless template_id
+          fail("failed to create template: #{create_template_response.inspect}")
+        end
+        begin
+          template = @fog_compute.images.get(template_id)
+        rescue => error
+          warn("failed to get template: #{template_id.inspect}: #{error}")
+          sleep(rand(10))
+          retry
+        end
+        template.wait_for do
+          persisted?
+        end
+
+        # TODO: copy images to multiple zones
+        @definition['template_zones']
+
+        require 'readline'
+        Readline.readline('Press any key...')
+      ensure
+        if snapshot_id
+          debug("Deleting snapshot #{snapshot_id.inspect}....")
+          @fog_compute.delete_snapshot(id: snapshot_id)
+        end
+      end
+
       def find_zone(definition, default_value = nil)
         if definition['zone_id']
           definition['zone_id']
@@ -272,7 +334,9 @@ module Packer
       end
 
       def templates(zone_id = nil)
-        templates = @fog_compute.images.all('templatefilter' => 'featured')
+        templates = @fog_compute.images.all('templatefilter' => 'featured').sort do |a, b|
+          b.created <=> a.created # reverse sort
+        end
         if zone_id
           templates.select { |t| t.zone_id == zone_id }
         else
@@ -305,6 +369,25 @@ module Packer
           networks.select { |network| network.zone_id == zone_id }
         else
           networks
+        end
+      end
+
+      def find_template_os_type(definition, default_value = nil)
+        if definition['template_os_id']
+          definition['template_os_id']
+        else
+          find_template_os_type_by_name(definition, default_value)
+        end
+      end
+
+      def find_template_os_type_by_name(definition, default_value = nil)
+        if definition['template_os_name']
+          name = definition['template_os_name'].downcase
+          @fog_compute.list_os_types['listostypesresponse']['ostype'].find do |ostype|
+            name == ostype['description'].downcase
+          end['id']
+        else
+          default_value
         end
       end
     end
