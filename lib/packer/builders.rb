@@ -39,19 +39,19 @@ module Packer
       end
 
       def debug(s)
-        @template.logger.debug("#{build_id} : #{s}")
+        @template.logger.debug(_(s))
       end
 
       def info(s)
-        @template.logger.info("#{build_id} : #{s}")
+        @template.logger.info(_(s))
       end
 
       def warn(s)
-        @template.logger.warn("#{build_id} : #{s}")
+        @template.logger.warn(_(s))
       end
 
       def error(s)
-        @template.logger.error("#{build_id} : #{s}")
+        @template.logger.error(_(s))
       end
 
       def put(_source, _destination, _options = {})
@@ -82,6 +82,27 @@ module Packer
         end
         error("Retry failed after #{n} times.")
         false
+      end
+
+      def use_color?
+        STDOUT.tty?
+      end
+
+      def _(s)
+        buf = []
+        if use_color?
+          color = 31 + build_id.bytes.reduce(:+) % 6
+          buf << "\e[0;#{color}m"
+          buf << build_id
+          buf << ' : '
+          buf << s
+          buf << "\e[0m"
+        else
+          buf << build_id
+          buf << ' : '
+          buf << s
+        end
+        buf.join
       end
     end
   end
