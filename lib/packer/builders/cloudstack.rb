@@ -222,8 +222,9 @@ module Packer
         create_template_options = {
           displaytext: name,
           name: name,
-          ostypeid: @cloudstack_template_os_type_id,
-          passwordenabled: source_template.password_enabled,
+          ostypeid: (@cloudstack_template_os_type_id || source_template.os_type_id),
+          passwordenabled: (source_template.password_enabled rescue true),
+          isdynamicallyscalable: (source_temp.is_dynamically_scalable rescue true),
           snapshotid: snapshot_id
         }.merge(Hash[source_template.details.map.with_index do |(key, value), i|
           [:"details[#{i}].#{key}", value]
