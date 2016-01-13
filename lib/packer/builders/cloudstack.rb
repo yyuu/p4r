@@ -235,9 +235,6 @@ module Packer
           [:"details[#{i}].#{key}", value]
         end])
 
-        require 'readline'
-        Readline.readline('Press any key...')
-
         info("Creating template #{name.inspect} as #{create_template_options.inspect}....")
         create_template_response = @fog_compute.create_template(create_template_options)
         template_id = create_template_response['createtemplateresponse']['id']
