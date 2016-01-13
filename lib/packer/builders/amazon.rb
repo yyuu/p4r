@@ -41,17 +41,16 @@ module Packer
         end
       end
 
-      def put(source, destination, _options = {})
-        debug(Shellwords.shelljoin(['scp', '-i', @ssh_private_key, source, "#{hostname}:#{destination}"]))
-        @machine.scp(source, destination)
+      def ssh_hostname
+        if @machine
+          @machine.ssh_ip_address
+        else
+          fail('invalid state')
+        end
       end
 
-      def run(cmdline, _options = {})
-        debug(Shellwords.shelljoin(['ssh', '-i', @ssh_private_key, hostname, '--', cmdline]))
-        @machine.ssh(cmdline) do |stdout, stderr|
-          debug(stdout.chomp) if 0 < stdout.length
-          warn(stderr.chomp) if 0 < stderr.length
-        end
+      def ssh_username
+        @definition['ssh_username'] || 'root'
       end
 
       private

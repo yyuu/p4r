@@ -54,7 +54,7 @@ module Packer
         @template.logger.error(_(s))
       end
 
-      def put(_source, _destination, _options = {})
+      def upload(_source, _destination, _options = {})
         fail(NotImplementedError)
       end
 

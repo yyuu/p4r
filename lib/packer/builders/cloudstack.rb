@@ -59,12 +59,16 @@ module Packer
         end
       end
 
-      def hostname
+      def ssh_hostname
         if @machine
           @machine.ssh_ip_address
         else
           fail('invalid state')
         end
+      end
+
+      def ssh_username
+        @definition['ssh_username'] || 'root'
       end
 
       private
@@ -114,8 +118,9 @@ module Packer
         @machine.private_key_path = @ssh_private_key
         debug("Waiting for temporary machine #{name.inspect} to be available via ssh....")
 
+        builder = self
         @machine.wait_for do
-          sshable?
+          builder.run('pwd') rescue false
         end
         debug("Created temporary machine #{name.inspect} (#{@machine.id.inspect}).")
       end
@@ -229,6 +234,10 @@ module Packer
         }.merge(Hash[source_template.details.map.with_index do |(key, value), i|
           [:"details[#{i}].#{key}", value]
         end])
+
+        require 'readline'
+        Readline.readline('Press any key...')
+
         info("Creating template #{name.inspect} as #{create_template_options.inspect}....")
         create_template_response = @fog_compute.create_template(create_template_options)
         template_id = create_template_response['createtemplateresponse']['id']
@@ -248,9 +257,6 @@ module Packer
 
         # TODO: copy images to multiple zones
         @definition['template_zones']
-
-        require 'readline'
-        Readline.readline('Press any key...')
       ensure
         if snapshot_id
           debug("Deleting snapshot #{snapshot_id.inspect}....")

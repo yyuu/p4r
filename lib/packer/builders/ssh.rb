@@ -1,6 +1,7 @@
 #!/usr/bin/env ruby
 
 require 'fileutils'
+require 'shellwords'
 require 'tmpdir'
 
 module Packer
@@ -28,16 +29,49 @@ module Packer
         # nop
       end
 
-      def hostname
+      def ssh_hostname
         fail(NotImplementedError)
       end
 
-      def put(source, destination, _options = {})
-        debug(Shellwords.shelljoin(['scp', '-i', @ssh_private_key, source, "#{hostname}:#{destination}"]))
+      def ssh_username
+        fail(NotImplementedError)
+      end
+
+      def upload(source, destination, _options = {})
+        args = ['scp']
+        args << '-F' << '/dev/null'
+        args << '-i' << @ssh_private_key
+        args << '-o' << 'ConnectTimeout=60'
+        args << '-o' << 'StrictHostKeyChecking=no'
+        args << '-o' << 'UserKnownHostsFile=/dev/null'
+        args << '-o' << "User=#{ssh_username}"
+        args << source << "#{ssh_hostname}:#{destination}"
+        scp = Shellwords.shelljoin(args)
+        debug(scp)
+        if system(scp)
+          true
+        else
+          fail("failed: #{scp}")
+        end
       end
 
       def run(cmdline, _options = {})
-        debug(Shellwords.shelljoin(['ssh', '-i', @ssh_private_key, hostname, '--', cmdline]))
+        args = ['ssh']
+        args << '-F' << '/dev/null'
+        args << '-i' << @ssh_private_key
+        args << '-o' << 'ConnectTimeout=60'
+        args << '-o' << 'StrictHostKeyChecking=no'
+        args << '-o' << 'UserKnownHostsFile=/dev/null'
+        args << '-o' << "User=#{ssh_username}"
+        args << ssh_hostname
+        args << "--" << cmdline
+        ssh = Shellwords.shelljoin(args)
+        debug(ssh)
+        if system(ssh)
+          true
+        else
+          fail("failed: #{ssh}")
+        end
       end
 
       private
